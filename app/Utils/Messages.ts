@@ -45,7 +45,28 @@ export default class Messages {
           retMenu += `${element.order} - ${element.description} ${ico}\n`
 
         });
+
         return `${retMessage?.description} \n${retMenu}`
+      }
+
+      if (data.cd_message == 'noDefault'){
+
+        let retMenu = '\n';
+
+
+        if (data.menu_id == null){
+          return `erro`
+        }
+
+        const menusForId = await new MenuController().showForId({
+          setor: data.cd_setor,
+          client_id: data.client_id,
+          menu_id: data.menu_id,
+        })
+
+        const retMessageMoreService = await MessageModel.findBy('cd_message', 'more_service');
+
+        return `${menusForId?.message}\n\n ${retMessageMoreService?.description} ${retMenu}`
       }
 
       if (data.cd_message == 'submenu'){
@@ -85,6 +106,8 @@ export default class Messages {
           retSubMenu += `${element.order} - ${element.description} ${ico}\n`
 
         });
+
+        retSubMenu += `0 - voltar`
 
         return `${retMessage?.description} \n${retSubMenu}`
       }

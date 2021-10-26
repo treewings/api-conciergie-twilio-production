@@ -2,6 +2,7 @@ import { twiml } from "Twilio"
 import Message from 'App/Utils/Messages'
 
 import {IMessage} from 'App/Controllers/Interfaces/IMessages'
+import LogAccess from 'App/Controllers/Http/LogAccessesController'
 
 export default class TwilioResponse {
     async send(data: IMessage) {
@@ -10,7 +11,13 @@ export default class TwilioResponse {
 
       const objTwiml = new twiml.MessagingResponse()
 
-      // lembrar de adicionar nesse ponto o log das mensagens
+      // log das conversas
+        await new LogAccess().store({
+          number: data.from,
+          received: data.body,
+          send: retMessage.toString()
+        })
+      // fim log das conversas
 
       return objTwiml.message(retMessage).toString()
     }

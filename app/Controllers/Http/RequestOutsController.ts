@@ -57,7 +57,7 @@ export default class RequestOutsController {
           activitiesOrigin: 4,
           teamExecution: 1,
           date: Moment().format('Y-M-D'),
-          hour: Moment().format('H:m'),
+          hour: Moment().format('H:mm'),
           activityRelationship: {activity},
           observation: element.service,
           priority: 0,

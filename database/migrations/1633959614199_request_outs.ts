@@ -13,7 +13,7 @@ export default class RequestOuts extends BaseSchema {
       table.string('number')
       table.string('nr_attendance')
       table.integer('movement_id').unsigned().references('id').inTable('movements')
-      table.json('content')
+      table.text('content', 'longtext')
       table.string('return_content').nullable()
       table.integer('type_request_id').unsigned().references('id').inTable('type_requests')
       table.string('branches_movement').nullable()

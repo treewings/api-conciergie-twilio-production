@@ -10,7 +10,11 @@ export default class LogAccessesController {
   public async create ({}: HttpContextContract) {
   }
 
-  public async store (data) {
+  public async store (data: {
+    number: string,
+    received : string,
+    send: string,
+  }){
     let retData = await LogAccess.create(data)
     return retData ? true : false
   }

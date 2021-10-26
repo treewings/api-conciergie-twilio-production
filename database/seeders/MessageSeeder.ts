@@ -37,7 +37,7 @@ export default class MessageSeederSeeder extends BaseSeeder {
         cd_message: 'quantity',
       },
       {
-        description: 'Anotei tudo! 👩‍💻 \nVocê deseja solicitar mais algum serviço? \n\n *1* - Sim \n *2* - Não, concluir pedido',
+        description: 'Anotei tudo! \nVocê deseja solicitar mais algum serviço? \n\n *1* - Sim \n *2* - Não, concluir pedido',
         cd_message: 'more_service',
       },
       {
@@ -67,6 +67,10 @@ export default class MessageSeederSeeder extends BaseSeeder {
       {
         description: 'É um prazer te atender. \nO que você deseja que eu faça por você?\n\n',
         cd_message: 'main_menu',
+      },
+      {
+        description: 'Caso queria fazer um novo pedido, basta selecionar uma das opções abaixo:\n\n',
+        cd_message: 'no_default_main_menu',
       },
       {
         description: 'Verifiquei que o número de atendimento informado é inválido.\n\nPara que eu possa te atender melhor, por favor informe o número de atendimento que se encontra na pulseira de identificação do paciente.',

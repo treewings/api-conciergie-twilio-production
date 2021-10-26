@@ -29,7 +29,7 @@ export default class SubMenusController {
     return await SubMenuModel
     .query()
     .where('menu_id', data.menu_id)
-    .where('id', data.submenu_id)
+    .where('order', data.submenu_id)
     .first()
 
   }

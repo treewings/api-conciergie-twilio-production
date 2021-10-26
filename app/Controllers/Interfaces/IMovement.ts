@@ -10,6 +10,7 @@ export interface IMovementStore {
   last_movement: number | null;
   client_id: number;
   more_service?: boolean;
+  keep_main_movement?: boolean;
 }
 
 export interface IMovementShow {

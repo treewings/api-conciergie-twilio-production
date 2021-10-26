@@ -11,6 +11,8 @@ export default class SummariesController {
     return MovementsModel
     .query()
     .where('status_movement_id', 7)
+    .whereNotNull('menu_id')
+    .whereNotNull('sub_menu_id')
     .where('main_movement', data.main_movement)
     .where('client_id', data.client_id)
     .where('number', data.number)

@@ -8,5 +8,7 @@ export interface IMessage {
   nr_attendance?: string;
   main_movement?: number;
   number?: string;
-  more_service?: boolean
+  more_service?: boolean;
+  body: string;
+  from: string;
 }

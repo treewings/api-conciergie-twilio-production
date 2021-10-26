@@ -29,7 +29,7 @@ export default class MovementsController {
     movement.status_movement_id = StatusMovement.id
     movement.quantity           = data.quantity
     movement.client_id          = data.client_id
-    movement.main_movement      = data.status_movement_code == 'lobby' ? data.last_movement : data.main_movement
+    movement.main_movement      = (data.status_movement_code == 'lobby' && data.keep_main_movement == null || false) ? data.last_movement : data.main_movement
     movement.main_movement      = data.status_movement_code == 'waiting' ? null : movement.main_movement
 
     if (data.status_movement_code == 'menu' && !data.more_service){
@@ -120,6 +120,17 @@ export default class MovementsController {
     .first()
 
     return ret === null ? false : ret;
+  }
+
+  public async showMovMenusDefault (data: IMovementShow) {
+
+    const ret = await MovementModel
+    .query()
+    .where('status_movement_id', 7)
+    .where(data.column, data.value)
+    .whereNotNull('menu_id')
+
+    return ret[0] ? true : false;
   }
 
   public async edit ({}: HttpContextContract) {

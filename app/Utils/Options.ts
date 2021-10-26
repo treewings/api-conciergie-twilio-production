@@ -57,6 +57,24 @@ export default class Options {
         return false
     }
 
+    async menuIsDefault(data: {
+      menu_id: number,
+      client_id: number,
+      setor: number
+    }) {
+      const retMenu = await new MenusController().showForId({
+        menu_id: data.menu_id,
+        setor: data.setor,
+        client_id: data.client_id,
+      })
+
+      if (retMenu){
+        return retMenu.type == 'default' ? true : false
+      }
+
+      return false
+    }
+
     async quantity(data: ISubMenus) {
 
       if (data.quantity == null){

@@ -15,6 +15,9 @@ export default class Menu extends BaseModel {
   public order: number
 
   @column()
+  public type: string
+
+  @column()
   public icon: string
 
   @column()
@@ -22,6 +25,9 @@ export default class Menu extends BaseModel {
 
   @column()
   public setor: number
+
+  @column()
+  public message: string
 
   @column()
   public client_id: number
