@@ -1,0 +1,112 @@
+import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
+
+//models
+import SubMenuModel from 'App/Models/SubMenu'
+
+export default class SubMenuSeederSeeder extends BaseSeeder {
+  public async run () {
+    await SubMenuModel.truncate(true)
+
+    await SubMenuModel.createMany([
+      {
+        description: 'Controle Remoto',
+        menu_id: 1,
+        order: 1,
+        time_attendance: 30,
+        active_quantity: false,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_controle',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Controle',
+        type_attendance_id: 3
+      },
+      {
+        description: 'Cobertor',
+        menu_id: 1,
+        order: 2,
+        time_attendance: 30,
+        active_quantity: true,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_enxoval',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Enxoval',
+        type_attendance_id: 3,
+        min_quantity: 1,
+        max_quantity: 2,
+      },
+      {
+        description: 'Kit Higiene',
+        menu_id: 1,
+        order: 3,
+        time_attendance: 30,
+        active_quantity: false,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_kit',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Kit Higiene',
+        type_attendance_id: 1,
+      },
+      {
+        description: 'Fronha',
+        menu_id: 1,
+        order: 4,
+        time_attendance: 30,
+        active_quantity: true,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_enxoval',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Enxoval',
+        type_attendance_id: 3,
+        min_quantity: 1,
+        max_quantity: 2,
+      },
+      {
+        description: 'Lençol',
+        menu_id: 1,
+        order: 5,
+        time_attendance: 30,
+        active_quantity: true,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_enxoval',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Enxoval',
+        type_attendance_id: 3,
+        min_quantity: 1,
+        max_quantity: 2,
+      },
+      {
+        description: 'Travesseiro',
+        menu_id: 1,
+        order: 6,
+        time_attendance: 30,
+        active_quantity: true,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_enxoval',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Enxoval',
+        type_attendance_id: 3,
+        min_quantity: 1,
+        max_quantity: 2,
+      },
+      {
+        description: 'Toalha de Banho',
+        menu_id: 1,
+        order: 7,
+        time_attendance: 30,
+        active_quantity: false,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_enxoval',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Enxoval',
+        type_attendance_id: 1,
+      },
+    ])
+  }
+}
