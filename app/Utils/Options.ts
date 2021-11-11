@@ -71,11 +71,11 @@ export default class Options {
       const retSubMenu = await new SubMenusController().showForId({
         menu_id: data.menu_id,
         submenu_id: 1,
-      })
+      }) || {id: 0}
 
 
-      if (retMenu && retSubMenu) {
-        return { 'type': retMenu.type, 'submenu_id': retSubMenu.id }
+      if (retMenu) {
+        return { 'type': retMenu.type, 'submenu_id': retSubMenu.id || 0 }
       }
 
       return { 'type': false, 'submenu_id': 0 }
