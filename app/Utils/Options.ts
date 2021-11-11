@@ -57,7 +57,7 @@ export default class Options {
         return false
     }
 
-    async menuIsDefault(data: {
+    async verifyMenuType(data: {
       menu_id: number,
       client_id: number,
       setor: number
@@ -68,11 +68,17 @@ export default class Options {
         client_id: data.client_id,
       })
 
-      if (retMenu){
-        return retMenu.type == 'default' ? true : false
+      const retSubMenu = await new SubMenusController().showForId({
+        menu_id: data.menu_id,
+        submenu_id: 1,
+      })
+
+
+      if (retMenu && retSubMenu) {
+        return { 'type': retMenu.type, 'submenu_id': retSubMenu.id }
       }
 
-      return false
+      return { 'type': false, 'submenu_id': 0 }
     }
 
     async quantity(data: ISubMenus) {
@@ -81,7 +87,7 @@ export default class Options {
         return false
       }
 
-      const retMenu = await new SubMenusController().showForId({
+      const retMenu = await new SubMenusController().showForIdQuantity({
         submenu_id: data.submenu_id,
         menu_id: data.menu_id,
       })

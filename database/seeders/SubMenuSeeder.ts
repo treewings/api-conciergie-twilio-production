@@ -153,6 +153,19 @@ export default class SubMenuSeederSeeder extends BaseSeeder {
         min_quantity: 1,
         max_quantity: 5,
       },
+      {
+        description: 'Pedir silencio no ambiente',
+        menu_id: 9,
+        order: 1,
+        time_attendance: 30,
+        active_quantity: false,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_controle',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Controle',
+        type_attendance_id: 3,
+      },
     ])
   }
 }

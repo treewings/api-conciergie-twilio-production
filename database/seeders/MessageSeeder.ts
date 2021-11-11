@@ -37,7 +37,7 @@ export default class MessageSeederSeeder extends BaseSeeder {
         cd_message: 'quantity',
       },
       {
-        description: 'Anotei tudo! \nVocê deseja solicitar mais algum serviço? \n\n *1* - Sim \n *2* - Não, concluir pedido',
+        description: 'Você deseja solicitar mais algum serviço? \n\n *1* - Sim \n *2* - Não, concluir pedido',
         cd_message: 'more_service',
       },
       {

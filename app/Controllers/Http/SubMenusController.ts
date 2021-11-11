@@ -26,11 +26,20 @@ export default class SubMenusController {
 
   public async showForId (data: ISubMenus) {
 
-    return await SubMenuModel
+    const ret = await SubMenuModel
     .query()
     .where('menu_id', data.menu_id)
     .where('order', data.submenu_id)
-    .first()
+    .first();
+
+    return ret;
+
+  }
+
+  public async showForIdQuantity (data: ISubMenus) {
+
+    return await SubMenuModel
+    .find(data.submenu_id)
 
   }
 

@@ -83,7 +83,7 @@ export default class MenuSeederSeeder extends BaseSeeder {
         order: 9,
         setor: 50,
         client_id: 1,
-        type: 'silencio_ambiente',
+        type: 'no_submenu',
         message: 'Ok, pedido enviado\n'
 
       },

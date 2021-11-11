@@ -191,6 +191,7 @@ export default class MainController {
         return new TwilioResponse().send(objMessage)
 
       } else {
+
         return this.submenu({
           checkNumber,
           Body,
@@ -424,7 +425,7 @@ export default class MainController {
         number: data.From,
         main_movement: data.checkNumber.main_movement,
         menu_id: data.checkNumber.menu_id,
-        submenu_id: data.Body,
+        submenu_id: valSubMenu.id,
         quantity: null,
         last_movement: data.checkNumber.id || 0,
         client_id: data.client_id,
@@ -452,25 +453,29 @@ export default class MainController {
       client_id: data.objMessage.client_id
     })
 
+
+
     if (!verMenu) {
       data.objMessage.cd_message = 'option_invalid'
       return new TwilioResponse().send(data.objMessage)
 
     } else {
 
-      const menuIsDefault = await new Options().menuIsDefault({
+      const menuIsDefault = await new Options().verifyMenuType({
         menu_id: data.Body,
         setor: data.objMessage.cd_setor,
         client_id: data.objMessage.client_id
       })
 
-      if (!menuIsDefault){
+      if (menuIsDefault.type != 'default' && menuIsDefault.type != false){
         return await this.ifMenuNoDefault({
           checkNumber: data.checkNumber,
           Body: data.Body,
           objMessage: data.objMessage,
           From: data.From,
           client_id: data.client_id,
+          type: menuIsDefault.type,
+          submenu_id: menuIsDefault.submenu_id
         })
       }
 
@@ -512,27 +517,51 @@ export default class MainController {
     objMessage: IMessage;
     From: string;
     client_id: number;
+    type: string | boolean;
+    submenu_id? : number;
   }) {
 
     // menu não é do tipo default,
     // status vai pra lobby (aguardando escolher o menu novamente)
     // response: resposta + menu
 
-    const storeMovement = await new MovementsController().store({
-      status_movement_code: 'more_service',
-      nr_attendance: data.checkNumber.nr_attendance,
-      number: data.From,
-      main_movement: data.checkNumber.main_movement,
-      menu_id: null,
-      submenu_id: null,
-      quantity: null,
-      last_movement: data.checkNumber.id,
-      client_id: data.client_id
-    })
+    if (data.type == 'link'){
+      const storeMovement = await new MovementsController().store({
+        status_movement_code: 'more_service',
+        nr_attendance: data.checkNumber.nr_attendance,
+        number: data.From,
+        main_movement: data.checkNumber.main_movement,
+        menu_id: null,
+        submenu_id: null,
+        quantity: null,
+        last_movement: data.checkNumber.id,
+        client_id: data.client_id
+      })
 
-    data.objMessage.cd_message = storeMovement ? 'noDefault' : 'error'
-    data.objMessage.menu_id = data.Body
-    return new TwilioResponse().send(data.objMessage)
+      data.objMessage.cd_message = storeMovement ? 'noDefault' : 'error'
+      data.objMessage.menu_id = data.Body
+      return new TwilioResponse().send(data.objMessage)
+    }
+
+    if (data.type == 'no_submenu'){
+      const storeMovement = await new MovementsController().store({
+        status_movement_code: 'more_service',
+        nr_attendance: data.checkNumber.nr_attendance,
+        number: data.From,
+        main_movement: data.checkNumber.main_movement,
+        menu_id: data.Body,
+        submenu_id: data.submenu_id || 1,
+        quantity: null,
+        last_movement: data.checkNumber.id,
+        client_id: data.client_id
+      })
+
+      data.objMessage.cd_message = storeMovement ? 'noDefault' : 'error'
+      data.objMessage.menu_id = data.Body
+      return new TwilioResponse().send(data.objMessage)
+    }
+
+
   }
 
 
