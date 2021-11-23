@@ -1,0 +1,24 @@
+<script>
+
+async function sendRquest(url, formId) {
+
+ try {
+
+  let form = document.getElementById(formId);
+  let data = new FormData(form);
+
+  axios.post(url, data)
+  .then(function (response) {
+    window.location.reload();
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+ } catch (error) {
+  console.log(error);
+ }
+
+}
+
+
+</script>

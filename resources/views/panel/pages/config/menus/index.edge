@@ -1,0 +1,130 @@
+@layout('panel/layouts/main')
+
+
+@section('body')
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ client.description }}</h1>
+  </div>
+    <a href="/panel/client/{{ client.id }}" class="btn btn-secondary">GERAIS</a>
+    <a href="/panel/client/{{ client.id }}/menus" class="btn btn-primary">MENUS</a>
+    <div class="col-md-12 text-end">
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Novo menu</button>
+    </div>
+  <hr/>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th scope="col">Descrição</th>
+          <th scope="col">Ordem</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Ícone</th>
+          <th scope="col">Mensagem</th>
+          <th scope="col">Paciente ou acompanhante?</th>
+          <th scope="col">Setor</th>
+          <th class="text-center" scope="col">Submenus</th>
+        </tr>
+      </thead>
+      <tbody>
+       @each(menu in menus)
+        <tr>
+          <td><input  type="text" value="{{ menu.description }}"></td>
+          <td><input type="text" value="{{ menu.order }}"></td>
+          <td> <input type="text" value="{{ menu.type }}"></td>
+          <td> <input type="text" value="{{ menu.icon }}"></td>
+          <td> <input type="text" value="{{ menu.message }}"></td>
+          <td> <input type="text" value="{{ menu.active_type_attendance }}"></td>
+          <td> <input type="text" value="{{ menu.setor }}"></td>
+          <td class="text-center">
+            @if (menu.type == 'default')
+             <a href="/panel/client/{{ menu.client_id }}/menus/{{ menu.id }}/submenus"class="btn btn-primary">
+              <span data-feather="arrow-up-right"></span>
+            </a>
+            @end
+          </td>
+        </tr>
+        @end
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-6"></div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-success">Salvar</button>
+      <a href="/panel" class="btn btn-danger">Cancelar / Voltar</a>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Adicionar Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="menuStore">
+        <div class="modal-body">
+
+
+          <div class="row">
+            <div class="col-md-6">
+              <label class="fw-bold" for="description">Descrição</label>
+              <input type="text" class="form-control" name="description" id="description" required>
+            </div>
+            <div class="col-md-2">
+              <label class="fw-bold" for="type">Tipo</label>
+              <select name="type" class="form-control" id="type" required>
+                <option value=""></option>
+                <option value="default">Padrão</option>
+                <option value="Link">Link</option>
+                <option value="no_submenu">Sem submenu</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="fw-bold" for="icon">Ícone</label>
+              <select name="icon" class="form-control" id="icon" required>
+                <option value=""></option>
+                <option value="cop">🧑</option>
+                <option value="hot">🛏️</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label class="fw-bold" for="message">Mensagem (Se for do tipo, Link ou Sem submenu)</label>
+              <input type="text" class="form-control" name="message" id="message">
+            </div>
+            <div class="col-md-2">
+              <label class="fw-bold" for="order">Setor</label>
+              <input type="number" class="form-control" name="setor" id="setor" required>
+            </div>
+            <div class="col-md-4">
+              <label class="fw-bold" for="active_type_attendance">Controla se paciente ou acompanhante?</label>
+              <select name="active_type_attendance" class="form-control" id="active_type_attendance" required>
+                <option value=""></option>
+                <option value="1">Sim</option>
+                <option value="0">Não</option>
+              </select>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" onclick="sendRquest('/panel/client/{{client.id}}/menus/store','menuStore')" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+@end

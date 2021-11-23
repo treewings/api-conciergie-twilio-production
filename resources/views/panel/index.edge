@@ -1,0 +1,36 @@
+@layout('panel/layouts/main')
+
+
+@section('body')
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Clientes</h1>
+  </div>
+  <div class="col-md-12 text-end">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createClient">Novo cliente</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th scope="col">Codigo</th>
+          <th scope="col">Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+       @each(client in clients)
+        <tr>
+          <td>{{ client.id }}</td>
+          <td>
+            <a href="/panel/client/{{client.id}}">{{ client.description }}</a>
+          </td>
+        </tr>
+        @end
+      </tbody>
+    </table>
+  </div>
+</main>
+
+  @include('panel/pages/config/client/create')
+
+@end

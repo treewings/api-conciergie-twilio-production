@@ -166,6 +166,20 @@ export default class SubMenuSeederSeeder extends BaseSeeder {
         service: 'HOTE - Solicitação de Controle',
         type_attendance_id: 3,
       },
+      // santa catarina
+      {
+        description: 'Controle Remoto',
+        menu_id: 10,
+        order: 1,
+        time_attendance: 30,
+        active_quantity: false,
+        group: 'grp_hotelaria',
+        activity: 'atv_hote_controle',
+        accept: 'atv_hote_aceitar',
+        team: 'eqp_hotelaria',
+        service: 'HOTE - Solicitação de Controle',
+        type_attendance_id: 3,
+      },
     ])
   }
 }

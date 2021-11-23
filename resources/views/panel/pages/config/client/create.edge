@@ -1,0 +1,65 @@
+<!-- Modal -->
+<div class="modal fade" id="createClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Adicionar cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="clientStore">
+        <div class="modal-body">
+
+
+          <div class="row">
+            <div class="col-md-6">
+              <label class="fw-bold">DESCRIÇÃO</label>
+              <input name="description" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold">ENDPOINT REQUEST</label>
+              <input name="endpoint_request" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">ENDPOINT REQUEST ITENS</label>
+              <input name="endpoint_request_itens" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">URL API MV</label>
+              <input name="api_mv_url" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">TOKEN API MV</label>
+              <input name="api_mv_token" type="text" class="form-control"required >
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">TWILIO ACCOUNT SID</label>
+              <input name="account_sid" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">TWILIO AUTH TOKEN</label>
+              <input name="auth_token" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">PHONE NUMBER</label>
+              <input name="phone_number" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6 mt-3">
+              <label class="fw-bold">ACTIVE SEND REQUEST</label>
+              <select name="active_send_request" class="form-control" id="active_send_request" required>
+                <option value=""></option>
+                <option value="1">Sim</option>
+                <option value="0">Não</option>
+              </select>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" onclick="sendRquest('/panel/client/store','clientStore')" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

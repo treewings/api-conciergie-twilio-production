@@ -1,0 +1,61 @@
+@layout('panel/layouts/main')
+
+
+@section('body')
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ client.description }}</h1>
+  </div>
+    <a href="/panel/client/{{ client.id }}" class="btn btn-primary">GERAIS</a>
+    <a href="/panel/client/{{ client.id }}/menus" class="btn btn-secondary">MENUS</a>
+  <hr/>
+  <div class="row">
+    <div class="col-md-6">
+      <label class="fw-bold">ENDPOINT REQUEST</label>
+      <input type="text" class="form-control" value="{{ client.endpoint_request }}">
+    </div>
+    <div class="col-md-6">
+      <label class="fw-bold">ENDPOINT REQUEST ITENS</label>
+      <input type="text" class="form-control" value="{{ client.endpoint_request_itens }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">URL API MV</label>
+      <input type="text" class="form-control" value="{{ client.api_mv_url }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">TOKEN API MV</label>
+      <input type="text" class="form-control" value="{{ client.api_mv_token }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">TWILIO ACCOUNT SID</label>
+      <input type="text" class="form-control" value="{{ client.account_sid }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">TWILIO AUTH TOKEN</label>
+      <input type="text" class="form-control" value="{{ client.auth_token }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">PHONE NUMBER</label>
+      <input type="text" class="form-control" value="{{ client.phone_number }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">ACTIVE</label>
+      <input type="text" class="form-control" value="{{ client.active }}">
+    </div>
+    <div class="col-md-6 mt-3">
+      <label class="fw-bold">ACTIVE SEND REQUEST</label>
+      <input type="text" class="form-control" value="{{ client.active_send_request }}">
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-6"></div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-success">Salvar</button>
+      <a href="/panel" class="btn btn-danger">Cancelar / Voltar</a>
+    </div>
+  </div>
+
+</main>
+
+@end

@@ -1,4 +1,5 @@
 {
+
   "typescript": true,
   "commands": [
     "./commands",

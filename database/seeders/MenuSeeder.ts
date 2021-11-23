@@ -87,6 +87,23 @@ export default class MenuSeederSeeder extends BaseSeeder {
         message: 'Ok, pedido enviado\n'
 
       },
+      // santa catarina
+      {
+        description: 'Serviço de Hotelaria',
+        active_type_attendance: true,
+        icon: '',
+        order: 1,
+        setor: 10,
+        client_id: 2
+      },
+      {
+        description: 'Serviço de Nutrição',
+        active_type_attendance: true,
+        icon: '',
+        order: 2,
+        setor: 10,
+        client_id: 2
+      },
     ])
   }
 }

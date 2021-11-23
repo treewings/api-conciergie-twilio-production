@@ -21,12 +21,12 @@ import Api from 'App/Services/Api'
 
 export default class MainController {
 
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, params }: HttpContextContract) {
 
 
     const From = request.input('From').substring(12, 200)
     const Body = request.input('Body')
-    const client_id = 1;
+    const client_id = params.client_id;
 
     let objMessage: IMessage = {
       client_id: client_id,
@@ -95,6 +95,7 @@ export default class MainController {
         })
 
         objMessage.cd_message = storeMovement ? 'main_menu' : 'error'
+        objMessage.cd_setor = statusNrAttendanceApi.cd_setor || 0
       } else {
         objMessage.cd_message = 'lobby_attendance_not_found'
 
@@ -137,6 +138,8 @@ export default class MainController {
 
         return new TwilioResponse().send(objMessage)
       }
+
+      objMessage.cd_setor = statusNrAttendanceApi.cd_setor || 0
     }
     //#endregion da validacao do nr_attendance
 
@@ -563,6 +566,5 @@ export default class MainController {
 
 
   }
-
 
 }

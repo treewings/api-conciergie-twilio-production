@@ -9,9 +9,9 @@ export default class Api {
 
     const ret = Axios.get(url)
     .then(function (response: any) {
-      let arr = response.data[0].cd_atendimento
+      let arr = response.data[0].cd_setor
 
-      return arr != null ? true : false
+      return arr != null ? arr : false
     })
     .catch(function () { //error
       console.error('Axios: erro ao acessar o endpoint MV')
@@ -29,21 +29,21 @@ export default class Api {
     .then(function (response: any) {
       let arr = response.data[0].cd_atendimento
 
-      let dadosFake = {
-        cd_setor_leito: '1182-1209',
-        paciente_vip: null,
-        cd_atendimento: '2284299',
-        cd_paciente: '2122735',
-        nm_paciente: 'JOSE MARQUES FILHO',
-        cd_convenio: '1',
-        nm_convenio: 'INTERNACAO SUS',
-        dt_nascimento: '06/05/1959',
-        cd_multi_empresa: '1',
-        telefone: '991122224',
-        precaucao: null
-      }
+      // let dadosFake = {
+      //   cd_setor_leito: '1182-1209',
+      //   paciente_vip: null,
+      //   cd_atendimento: '2284299',
+      //   cd_paciente: '2122735',
+      //   nm_paciente: 'JOSE MARQUES FILHO',
+      //   cd_convenio: '1',
+      //   nm_convenio: 'INTERNACAO SUS',
+      //   dt_nascimento: '06/05/1959',
+      //   cd_multi_empresa: '1',
+      //   telefone: '991122224',
+      //   precaucao: null
+      // }
 
-      return arr != null ? dadosFake : false //response.data[0]
+      return arr != null ? response.data[0] : false
     })
     .catch(function () { //error
       console.error('Axios: erro ao acessar o endpoint MV')

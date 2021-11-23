@@ -35,7 +35,7 @@ export default class Messages {
         })
 
         if (menus == null){
-          return `erro`
+          return `Não foi encontrado menu disponível.`
         }
 
         menus.forEach(async element => {
@@ -98,7 +98,7 @@ export default class Messages {
         })
 
         if (subMenus == null){
-          return `erro`
+          return `não foi encontrado submenu disponível.`
         }
 
         subMenus.forEach(async element => {
