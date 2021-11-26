@@ -22,6 +22,9 @@ export default class Movement extends BaseModel {
 
   @column()
   public main_movement: number | null
+  
+  @column()
+  public type_attendance: number | null
 
   @column()
   public client_id: number

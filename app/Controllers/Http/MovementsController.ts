@@ -28,6 +28,7 @@ export default class MovementsController {
     movement.nr_attendance      = data.nr_attendance
     movement.status_movement_id = StatusMovement.id
     movement.quantity           = data.quantity
+	movement.type_attendance	= data.type_attendance
     movement.client_id          = data.client_id
     movement.main_movement      = (data.status_movement_code == 'lobby' && data.keep_main_movement == null || false) ? data.last_movement : data.main_movement
     movement.main_movement      = data.status_movement_code == 'waiting' ? null : movement.main_movement
@@ -68,7 +69,7 @@ export default class MovementsController {
       movement.sub_menu_id = data.submenu_id
     }
 
-    if (data.status_movement_code == 'submenu' || data.status_movement_code == 'quantity'){
+    if (data.status_movement_code == 'submenu_old'){ //data.status_movement_code == 'quantity'
 
       if (data.submenu_id == null || data.menu_id == null){
         return false
@@ -142,6 +143,7 @@ export default class MovementsController {
     .where('active', true)
     .where('client_id', data.client_id)
     .preload('status_movement')
+	.preload('menu')
     .first()
 
     return ret === null ? false : ret;

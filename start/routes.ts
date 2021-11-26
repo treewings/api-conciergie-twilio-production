@@ -84,3 +84,11 @@ Route.get('/webhook/:client_id', async (ctx) => {
 
   return new MainController().index(ctx)
 });
+
+Route.post('/webhook/:client_id', async (ctx) => {
+  const { default: MainController } = await import(
+    'App/Controllers/Http/webhook/MainController'
+  )
+
+  return new MainController().index(ctx)
+});

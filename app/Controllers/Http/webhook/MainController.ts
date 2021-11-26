@@ -31,7 +31,7 @@ export default class MainController {
     let objMessage: IMessage = {
       client_id: client_id,
       cd_message: '',
-      cd_setor: 50,
+      cd_setor: 0,
       menu_id: 0,
       type_attendance_id: 3,
       nr_attendance: '',
@@ -50,10 +50,10 @@ export default class MainController {
     //#endregion informacoes do cliente
 
     const checkNumber = await new MovementsController().show({ column: 'number', value: From, client_id })
-
+	
     //#region da verificacao do numero
     if (checkNumber === false) {
-
+	
       const storeMovement = await new MovementsController().store({
         status_movement_code: 'waiting',
         number: From,
@@ -95,7 +95,7 @@ export default class MainController {
         })
 
         objMessage.cd_message = storeMovement ? 'main_menu' : 'error'
-        objMessage.cd_setor = statusNrAttendanceApi.cd_setor || 0
+        objMessage.cd_setor = statusNrAttendanceApi.CD_SETOR || 0
       } else {
         objMessage.cd_message = 'lobby_attendance_not_found'
 
@@ -139,7 +139,7 @@ export default class MainController {
         return new TwilioResponse().send(objMessage)
       }
 
-      objMessage.cd_setor = statusNrAttendanceApi.cd_setor || 0
+      objMessage.cd_setor = statusNrAttendanceApi.CD_SETOR || 0
     }
     //#endregion da validacao do nr_attendance
 
@@ -159,7 +159,7 @@ export default class MainController {
     if (checkNumber.status_movement.cd_status_movement === 'menu') {
       const isTypeAttendance =
         await new Options().isTypeAttendance({
-          menu_id: checkNumber.menu_id,
+          menu_id: checkNumber.menu.order,
           setor: objMessage.cd_setor,
           client_id: objMessage.client_id
         })
@@ -181,7 +181,8 @@ export default class MainController {
             submenu_id: null,
             quantity: null,
             last_movement: checkNumber.id,
-            client_id
+            client_id,
+			type_attendance: Body,
           })
 
           objMessage.cd_message = storeMovement ? 'submenu' : 'error'
@@ -270,7 +271,7 @@ export default class MainController {
         option: Body
       })
 
-      objMessage.menu_id = checkNumber.menu_id || 0
+      objMessage.menu_id = checkNumber.menu.order || 0
       objMessage.submenu_id = checkNumber.sub_menu_id || 0
       objMessage.main_movement = checkNumber.main_movement || 0
       objMessage.nr_attendance = checkNumber.nr_attendance || ''
@@ -335,7 +336,7 @@ export default class MainController {
       if (valConfirm) {
         objMessage.cd_message = Body == 1 ? 'end_service' : 'cancel_service'
 
-        const storeMovement = await new MovementsController().store({
+       const storeMovement = await new MovementsController().store({
           status_movement_code: 'end_service',
           nr_attendance: checkNumber.nr_attendance,
           number: From,
@@ -414,8 +415,10 @@ export default class MainController {
     const valSubMenu = await new Options().subMenu({
       menu_id: data.checkNumber.menu_id,
       submenu_id: data.Body,
-      type_attendance_id: 0,
+      type_attendance_id: data.checkNumber.type_attendance,
     })
+	
+	//console.log(`menu_id: ${data.checkNumber.menu_id}, body: ${data.Body}`);
 
     if (valSubMenu != null) {
 
@@ -494,7 +497,7 @@ export default class MainController {
         nr_attendance: data.checkNumber.nr_attendance,
         number: data.From,
         main_movement: data.checkNumber.main_movement,
-        menu_id: data.Body,
+        menu_id: verMenu.id, //data.Body
         submenu_id: null,
         quantity: null,
         last_movement: data.checkNumber.id,
@@ -504,7 +507,7 @@ export default class MainController {
       if (storeMovement) {
         data.objMessage.cd_message = isTypeAttendance ? 'pac_acomp' : 'submenu'
         data.objMessage.submenu_id = 0
-        data.objMessage.menu_id = data.Body
+        data.objMessage.menu_id = isTypeAttendance ? data.Body : verMenu.id
 
       } else {
         data.objMessage.cd_message = 'error'

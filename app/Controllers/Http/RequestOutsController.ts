@@ -9,6 +9,7 @@ import { IOut, IOutItens } from 'App/Controllers/Interfaces/IRequest'
 
 //models
 import RequestOutModel from 'App/Models/RequestOut'
+import MovementModel from 'App/Models/Movement'
 
 
 
@@ -33,7 +34,7 @@ export default class RequestOutsController {
     for (let index = 0; index < summaries[0].length; index++) {
 
       const element = summaries[0][index];
-
+	  
       let activity: any = []
       activity.push({alternativeIdentifier: element.activity,})
       activity.push({alternativeIdentifier: element.accept,})
@@ -77,7 +78,7 @@ export default class RequestOutsController {
             'pac.dt_nascimento': null,
             'tarefa.classif': null,
             'cmp.nm_solic': 'concierge',
-            'tsk.concierge_para_paciente': 'não',
+            'tsk.concierge_para_paciente': element.serviceIsPatient,
             'tsk.concierge_quantidade': element.sum_qtd,
           }
         }

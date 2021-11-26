@@ -30,14 +30,14 @@ export default class XmlsController {
         console.log('ok')
         let content = JSON.parse(dataRequest.content)
 
-        content.schedule.serviceLocal.alternativeIdentifier = apiMv.cd_setor_leito
-        content.schedule.customFields["pac.cd_paciente"] = apiMv.cd_paciente
-        content.schedule.customFields["pac.nm_paciente"] = apiMv.nm_paciente
-        content.schedule.customFields["pac.sn_vip"] = apiMv.sn_vip
-        content.schedule.customFields["con.cd_convenio"] = apiMv.cd_convenio
-        content.schedule.customFields["con.nm_convenio"] = apiMv.nm_convenio
-        content.schedule.customFields["pac.cd_atendimento"] = apiMv.cd_atendimento
-        content.schedule.customFields["pac.dt_nascimento"] = apiMv.dt_nascimento
+        content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
+        content.schedule.customFields["pac.cd_paciente"] = apiMv.CD_PACIENTE
+        content.schedule.customFields["pac.nm_paciente"] = apiMv.NM_PACIENTE
+        content.schedule.customFields["pac.sn_vip"] = apiMv.SN_VIP
+        content.schedule.customFields["con.cd_convenio"] = apiMv.CD_CONVENIO
+        content.schedule.customFields["con.nm_convenio"] = apiMv.NM_CONVENIO
+        content.schedule.customFields["pac.cd_atendimento"] = apiMv.CD_ATENDIMENTO
+        content.schedule.customFields["pac.dt_nascimento"] = apiMv.DT_NASCIMENTO
 
         let dataUpdate = await new RequestOutController().update({
           id: dataRequest.id,

@@ -63,9 +63,8 @@ export default class MenusController {
     .where('client_id', data.client_id)
     .where('order', data.menu_id || 0)
     .first()
-
   }
-
+  
   public async edit ({}: HttpContextContract) {
   }
 

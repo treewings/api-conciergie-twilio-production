@@ -5,11 +5,11 @@ import fastXmlParser from 'fast-xml-parser'
 
 export default class Api {
   public async mv(data: IApiMV) {
-    const url = `${data.url}?cd_atendimento=${data.nr_attendance}&token=${data.token}`
-
+    const url = `${data.url}/${data.nr_attendance}/${data.token}`
+	console.log();
     const ret = Axios.get(url)
     .then(function (response: any) {
-      let arr = response.data[0].cd_setor
+      let arr = response.data
 
       return arr != null ? arr : false
     })
@@ -23,11 +23,11 @@ export default class Api {
   }
 
   public async dataMv(data: IApiMV) {
-    const url = `${data.url}?cd_atendimento=${data.nr_attendance}&token=${data.token}`
+    const url = `${data.url}/${data.nr_attendance}/${data.token}`
 
     const ret = Axios.get(url)
     .then(function (response: any) {
-      let arr = response.data[0].cd_atendimento
+      let arr = response.data.CD_ATENDIMENTO
 
       // let dadosFake = {
       //   cd_setor_leito: '1182-1209',
@@ -43,7 +43,7 @@ export default class Api {
       //   precaucao: null
       // }
 
-      return arr != null ? response.data[0] : false
+      return arr != null ? response.data : false
     })
     .catch(function () { //error
       console.error('Axios: erro ao acessar o endpoint MV')

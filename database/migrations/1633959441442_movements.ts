@@ -19,6 +19,7 @@ export default class Movements extends BaseSchema {
       table.boolean('active').defaultTo(true)
       table.string('quantity').nullable()
       table.integer('main_movement').nullable()
+	  table.integer('type_attendance').nullable()
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
     })

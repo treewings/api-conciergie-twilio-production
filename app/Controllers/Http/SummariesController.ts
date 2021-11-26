@@ -37,7 +37,8 @@ export default class SummariesController {
       team,
       service,
       quantity,
-      main_movement
+      main_movement,
+	  serviceIsPatient
     from (
       select
           sub_menus.description,
@@ -49,7 +50,8 @@ export default class SummariesController {
           movements.main_movement as main_movement,
           movements.id,
           if(movements.quantity is null, 1, movements.quantity) as qtd,
-        if(movements.quantity is null, ' (1)', concat(' (', movements.quantity, ')')) as quantity
+		  if(sub_menus.type_attendance_id = 2, 'Não', 'Sim') serviceIsPatient,
+          if(movements.quantity is null, ' (1)', concat(' (', movements.quantity, ')')) as quantity
         from movements, menus, sub_menus
         where
         movements.status_movement_id = 7

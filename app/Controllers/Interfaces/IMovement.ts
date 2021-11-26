@@ -7,6 +7,7 @@ export interface IMovementStore {
   submenu_id: number | null;
   quantity: string | null;
   main_movement: number | null;
+  type_attendance?: number | null;
   last_movement: number | null;
   client_id: number;
   more_service?: boolean;
