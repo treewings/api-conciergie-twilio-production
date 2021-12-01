@@ -156,12 +156,12 @@ export default class Messages {
         getMovements.forEach(element => {
           if (element.menu.description != descMenu) {
             // menu = '- '+element.menu.description+' '+this.icons(element.menu.icon)
-            menu = `- *${element.menu.description}* ${this.icons(element.menu.icon)}`
+            menu = `*${element.menu.description}* ${this.icons(element.menu.icon)}`
           }else{
             menu = ''
           }
 
-          subMenu += `${menu}\n${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n Prazo: ${element.sub_menu.time_attendance}\n\n`
+          subMenu += `- ${menu}\n${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n Prazo: ${element.sub_menu.time_attendance}\n\n`
 
           descMenu = element.menu.description
 
