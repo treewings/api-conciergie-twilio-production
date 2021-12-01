@@ -69,6 +69,7 @@ export default class SubMenusController {
     .query()
     .where('menu_id', data.menu_id)
     .whereIn('type_attendance_id', [data.type_attendance_id, 3])
+    .orderBy('order', 'asc')
   }
 
   public async showForId (data: ISubMenus) {
@@ -82,7 +83,7 @@ export default class SubMenusController {
     return ret;
 
   }
-  
+
    public async showForIdWithTypeAttendance (data: ISubMenus) {
 
     const ret = await SubMenuModel

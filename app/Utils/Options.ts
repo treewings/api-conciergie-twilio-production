@@ -31,7 +31,7 @@ export default class Options {
       const retMenu = await new SubMenusController().showForIdWithTypeAttendance({
         menu_id: data.menu_id,
         submenu_id: data.submenu_id,
-		type_attendance: data.type_attendance_id
+		    type_attendance: data.type_attendance_id
       })
 
       return retMenu

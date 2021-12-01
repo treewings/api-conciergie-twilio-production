@@ -10,6 +10,7 @@ export interface ISubMenus{
   submenu_id: number;
   type_attendance_id?: number;
   quantity?: number;
+  type_attendance?: any;
 }
 
 export interface IPacAcomp{
