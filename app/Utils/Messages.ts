@@ -161,7 +161,7 @@ export default class Messages {
             menu = ''
           }
 
-          subMenu += `${menu}\n - ${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n Prazo: ${element.sub_menu.time_attendance} min\n\n`
+          subMenu += `${menu}\n - ${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n Prazo: ${element.sub_menu.time_attendance} min\n`
 
           descMenu = element.menu.description
 
