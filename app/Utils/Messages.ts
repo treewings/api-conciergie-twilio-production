@@ -169,7 +169,7 @@ export default class Messages {
 
         let message = `${retMessageSummry?.description}\n\n${subMenu}`
 
-        let summary = `${message} \n\n ${retMessage?.description}`
+        let summary = `${message} \n ${retMessage?.description}`
         console.log(summary)
         return summary
       }
