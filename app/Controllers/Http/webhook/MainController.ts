@@ -50,10 +50,10 @@ export default class MainController {
     //#endregion informacoes do cliente
 
     const checkNumber = await new MovementsController().show({ column: 'number', value: From, client_id })
-	
+
     //#region da verificacao do numero
     if (checkNumber === false) {
-	
+
       const storeMovement = await new MovementsController().store({
         status_movement_code: 'waiting',
         number: From,
@@ -415,9 +415,9 @@ export default class MainController {
     const valSubMenu = await new Options().subMenu({
       menu_id: data.checkNumber.menu_id,
       submenu_id: data.Body,
-      type_attendance_id: data.checkNumber.type_attendance,
+      type_attendance_id: data.checkNumber.type_attendance || 3,
     })
-	
+
 	//console.log(`menu_id: ${data.checkNumber.menu_id}, body: ${data.Body}`);
 
     if (valSubMenu != null) {

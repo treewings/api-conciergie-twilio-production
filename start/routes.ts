@@ -32,6 +32,14 @@ Route.get('/panel', async () => {
   return new IndexController().index()
 });
 
+Route.get('/insertMenuForSetor/:client_id/:old_setor/:new_setor', async (params) => {
+  const { default: IndexController } = await import(
+    'App/Utils/Menus'
+  )
+
+  return new IndexController().insertMultiMenusForSetor(params)
+});
+
 Route.post('/panel/client/:client_id/menus/store', async (ctx) => {
   const { default: MenusController } = await import(
     'App/Controllers/Http/MenusController'

@@ -42,7 +42,7 @@ export default class Messages {
 
           ico = this.icons(element.icon)
 
-          retMenu += `${element.order} - ${element.description} ${ico}\n`
+          retMenu += `*${element.order}* - ${element.description} ${ico}\n`
 
         });
 
@@ -103,7 +103,7 @@ export default class Messages {
 
         subMenus.forEach(async element => {
 
-          retSubMenu += `${element.order} - ${element.description} ${ico}\n`
+          retSubMenu += `*${element.order}* - ${element.description} ${ico}\n`
 
         });
 
@@ -155,12 +155,13 @@ export default class Messages {
 
         getMovements.forEach(element => {
           if (element.menu.description != descMenu) {
-            menu = '- '+element.menu.description+' '+this.icons(element.menu.icon)
+            // menu = '- '+element.menu.description+' '+this.icons(element.menu.icon)
+            menu = `- *${element.menu.description}* ${this.icons(element.menu.icon)}`
           }else{
             menu = ''
           }
 
-          subMenu += `${menu}\n${element.sub_menu.description}\nQuantidade: ${element.quantity || 1}\n\n`
+          subMenu += `${menu}\n${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n Prazo: ${element.sub_menu.time_attendance}\n\n`
 
           descMenu = element.menu.description
 
