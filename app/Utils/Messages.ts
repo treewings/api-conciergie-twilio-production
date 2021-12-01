@@ -107,7 +107,7 @@ export default class Messages {
 
         });
 
-        retSubMenu += `0 - voltar`
+        retSubMenu += `*0* - voltar`
 
         return `${retMessage?.description} \n${retSubMenu}`
       }
@@ -208,10 +208,22 @@ export default class Messages {
     icons(data: any) {
       let ico = '';
       switch (data){
-        case 'hotelaria': ico = '🛏️'
+        case 'rouparia': ico = '🧺'
         break
 
-        case 'lavanderia': ico = '🧹'
+        case 'limpeza': ico = '🧼'
+        break
+
+        case 'hospitalidade': ico = '🛏'
+        break
+
+        case 'copa': ico = '🍽'
+        break
+
+        case 'lactario': ico = '🍼'
+        break
+
+        case 'nutricao': ico = '🧑‍🍳'
         break
 
         default: ico = ''
