@@ -88,7 +88,7 @@ export default class Messages {
 
         if (data.menu_id && data.more_service == true){
           const isTypeAttendance = await new Options().isTypeAttendance({
-            menu_id: data.menu_order,
+            menu_id: data.menu_order || null,
             setor: data.cd_setor,
             client_id: data.client_id
           })
