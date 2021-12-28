@@ -1,4 +1,4 @@
-import { twiml } from "Twilio"
+import { twiml } from "twilio"
 import Message from 'App/Utils/Messages'
 
 import {IMessage} from 'App/Controllers/Interfaces/IMessages'
