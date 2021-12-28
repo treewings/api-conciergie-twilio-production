@@ -4,7 +4,8 @@ import MessageModel from 'App/Models/Message';
 //controllers
 import MenuController from 'App/Controllers/Http/MenusController';
 import SubMenuController from 'App/Controllers/Http/SubMenusController';
-import SummaryController from 'App/Controllers/Http/SummariesController'
+import SummaryController from 'App/Controllers/Http/SummariesController';
+import ClientsController from 'App/Controllers/Http/ClientsController';
 
 
 // interfaces
@@ -17,6 +18,20 @@ export default class Messages {
     async default(data: IMessage) {
 
       const retMessage = await MessageModel.findBy('cd_message', data.cd_message);
+
+      if (data.cd_message == 'init' || data.cd_message == 'lobby_attendance_not_found'){
+
+        const client = await new ClientsController().show(data.client_id)
+
+        const splitDescription = retMessage?.description.split('_client_')
+
+        if (splitDescription){
+          console.log(`aqui: ${splitDescription[1]}`)
+
+          return retMessage === null ? '' : splitDescription[0] + client?.description + splitDescription[2];
+
+        }
+      }
 
       if (data.cd_message == 'main_menu'){
 
