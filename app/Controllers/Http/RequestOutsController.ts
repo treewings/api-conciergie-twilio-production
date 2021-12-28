@@ -9,9 +9,6 @@ import { IOut, IOutItens } from 'App/Controllers/Interfaces/IRequest'
 
 //models
 import RequestOutModel from 'App/Models/RequestOut'
-import MovementModel from 'App/Models/Movement'
-
-
 
 export default class RequestOutsController {
   public async index ({}: HttpContextContract) {
@@ -34,7 +31,7 @@ export default class RequestOutsController {
     for (let index = 0; index < summaries[0].length; index++) {
 
       const element = summaries[0][index];
-	  
+
       let activity: any = []
       activity.push({alternativeIdentifier: element.activity,})
       activity.push({alternativeIdentifier: element.accept,})

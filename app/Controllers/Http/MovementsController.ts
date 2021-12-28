@@ -28,7 +28,7 @@ export default class MovementsController {
     movement.nr_attendance      = data.nr_attendance
     movement.status_movement_id = StatusMovement.id
     movement.quantity           = data.quantity
-	movement.type_attendance	= data.type_attendance
+	  movement.type_attendance	  = data.type_attendance || null
     movement.client_id          = data.client_id
     movement.main_movement      = (data.status_movement_code == 'lobby' && data.keep_main_movement == null || false) ? data.last_movement : data.main_movement
     movement.main_movement      = data.status_movement_code == 'waiting' ? null : movement.main_movement

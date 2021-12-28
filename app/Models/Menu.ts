@@ -1,9 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 
 // models
 import Client from './Client'
-import SubMenu from './SubMenu'
 
 export default class Menu extends BaseModel {
   @column({ isPrimary: true })

@@ -3,7 +3,7 @@ export interface IMessage {
   cd_message: string;
   cd_setor: number;
   menu_id?: number | null;
-  menu_order?: number | null;;
+  menu_order?: number | null;
   submenu_id?: number | null;
   type_attendance_id: number;
   nr_attendance?: string;

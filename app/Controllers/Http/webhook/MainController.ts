@@ -51,10 +51,13 @@ export default class MainController {
     //#endregion informacoes do cliente
 
     const checkNumber = await new MovementsController().show({ column: 'number', value: From, client_id })
-	if (checkNumber.menu){
-		objMessage.cd_setor = checkNumber.menu.setor
+
+	if (checkNumber){
+    if (checkNumber.menu){
+      objMessage.cd_setor = checkNumber.menu.setor
+    }
 	}
-	 
+
 	//console.log(objMessage.cd_setor, client_id);
 
     //#region da verificacao do numero
@@ -323,7 +326,7 @@ export default class MainController {
           client_id: client_id,
           more_service: true,
         })
-		
+
         objMessage.cd_message = storeMovement ? messageFromMoreService : 'error'
         return new TwilioResponse().send(objMessage)
 
