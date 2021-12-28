@@ -7,30 +7,7 @@ export default class MenusUtil {
   async insertMultiMenusForSetor({ params }: HttpContextContract) {
 
     const setores = [
-      4,
-      10,
-      12,
-      18,
-      32,
-      37,
-      40,
-      84,
-      105,
-      106,
-      107,
-      147,
-      151,
-      175,
-      183,
-      184,
-      199,
-      200,
-      208,
-      211,
-      235,
-      236,
-      237,
-      311,
+      3
     ]
 
     for (let setor of setores) {
