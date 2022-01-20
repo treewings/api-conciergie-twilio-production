@@ -1,5 +1,6 @@
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import cron from 'node-cron'
+import Moment from 'moment'
 
 export default class AppProvider {
   constructor (protected app: ApplicationContract) {
@@ -19,6 +20,7 @@ export default class AppProvider {
     // #region cron build xml single request
     const XmlContr = (await import('App/Controllers/Http/XmlsController')).default
       cron.schedule("*/10 * * * * *", async () => {
+        console.log(`[${Moment().format('H:mm')}]`)
         await new XmlContr().BuildXmlSingleRequest()
         await new XmlContr().BuildXmlSingleRequestItens()
       });
