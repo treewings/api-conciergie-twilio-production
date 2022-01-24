@@ -241,6 +241,12 @@ export default class Messages {
         case 'nutricao': ico = '🧑‍🍳'
         break
 
+        case 'cozinha': ico = '🍴'
+        break
+
+        case 'manutencao': ico = '🛠'
+        break
+
         default: ico = ''
       }
 
