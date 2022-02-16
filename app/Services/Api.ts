@@ -5,18 +5,71 @@ import fastXmlParser from 'fast-xml-parser'
 
 export default class Api {
   public async mv(data: IApiMV) {
-    const url = `${data.url}/${data.nr_attendance}/${data.token}`
-	console.log();
-    const ret = Axios.get(url)
-    .then(function (response: any) {
-      let arr = response.data
+    const url = `${data.url}`
+    const body = {
+      i_code: data.nr_attendance,
+      consult: 'attendance',
+      company_id: data.company_id
+    }
+    const headers = {
+      ACCESS_KEY: data.token
+    }
 
-      return arr != null ? arr : false
-    })
-    .catch(function () { //error
-      console.error('Axios: erro ao acessar o endpoint MV')
-      return false
-    });
+    console.log(JSON.stringify({
+      url: url,
+      data: body,
+      headers: headers
+    }))
+
+    const ret = Axios({
+        method: 'post',
+        url: url,
+        data: body,
+        headers: headers
+      }
+    ).then(function (response: any) {
+
+        let status = response.data.message.status
+
+        if (status == 200){
+          const {
+            convenio: { cd_convenio, nm_convenio },
+            setor: { cd_setor },
+            leito: { cd_leito },
+          } = response.data.message.Body.atendimento
+
+          const {
+            sn_vip,
+            cd_paciente,
+            nm_paciente,
+            dt_nascimento,
+            telefone
+          } = response.data.message.Body.paciente
+
+          let dataTranslate = {
+            CD_SETOR_LEITO: `${cd_setor}-${cd_leito}`,
+            SN_VIP: sn_vip,
+            CD_ATENDIMENTO: data.nr_attendance,
+            CD_PACIENTE: cd_paciente,
+            NM_PACIENTE: nm_paciente,
+            CD_CONVENIO: cd_convenio,
+            NM_CONVENIO: nm_convenio,
+            DT_NASCIMENTO: dt_nascimento,
+            TELEFONE: telefone,
+            CD_SETOR: cd_setor,
+            PREUCAUCAO: null
+          }
+
+          return dataTranslate
+        }
+
+        return null
+      })
+      .catch(function (err) { //error
+        console.error('Axios: erro ao acessar o endpoint MV')
+        console.error(err)
+        return null
+      });
 
     return ret
 
@@ -26,29 +79,47 @@ export default class Api {
     const url = `${data.url}/${data.nr_attendance}/${data.token}`
 
     const ret = Axios.get(url)
-    .then(function (response: any) {
-      let arr = response.data.CD_ATENDIMENTO
+      .then(function (response: any) {
+        let status = response.data.message.status
 
-      // let dadosFake = {
-      //   cd_setor_leito: '1182-1209',
-      //   paciente_vip: null,
-      //   cd_atendimento: '2284299',
-      //   cd_paciente: '2122735',
-      //   nm_paciente: 'JOSE MARQUES FILHO',
-      //   cd_convenio: '1',
-      //   nm_convenio: 'INTERNACAO SUS',
-      //   dt_nascimento: '06/05/1959',
-      //   cd_multi_empresa: '1',
-      //   telefone: '991122224',
-      //   precaucao: null
-      // }
+        if (status == 200){
+          const {
+            convenio: { cd_convenio, nm_convenio },
+            setor: { cd_setor },
+            leito: { cd_leito },
+          } = response.data.message.Body.atendimento
 
-      return arr != null ? response.data : false
-    })
-    .catch(function () { //error
-      console.error('Axios: erro ao acessar o endpoint MV')
-      return false
-    });
+          const {
+            sn_vip,
+            cd_paciente,
+            nm_paciente,
+            dt_nascimento,
+            telefone
+          } = response.data.message.Body.paciente
+
+          let dataTranslate = {
+            CD_SETOR_LEITO: `${cd_setor}-${cd_leito}`,
+            SN_VIP: sn_vip,
+            CD_ATENDIMENTO: data.nr_attendance,
+            CD_PACIENTE: cd_paciente,
+            NM_PACIENTE: nm_paciente,
+            CD_CONVENIO: cd_convenio,
+            NM_CONVENIO: nm_convenio,
+            DT_NASCIMENTO: dt_nascimento,
+            TELEFONE: telefone,
+            CD_SETOR: cd_setor,
+            PREUCAUCAO: null
+          }
+
+          return dataTranslate
+        }
+
+        return null
+      })
+      .catch(function () { //error
+        console.error('Axios: erro ao acessar o endpoint')
+        return null
+      });
 
     return ret
 
@@ -62,22 +133,22 @@ export default class Api {
       let options: Object = {
         method: 'POST',
         url: url,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: qs.stringify({
           'data': data.xml
         })
       }
 
       const ret = await Axios.request(options)
-      .then(function (response: any) {
-        let arr = fastXmlParser.parse(response.data)
+        .then(function (response: any) {
+          let arr = fastXmlParser.parse(response.data)
 
-        return arr != null ? arr.result.resourceId : false
-      })
-      .catch(function (error) { //error
-        //console.error(error.response)
-        return error.toString()
-      });
+          return arr != null ? arr.result.resourceId : false
+        })
+        .catch(function (error) { //error
+          //console.error(error.response)
+          return error.toString()
+        });
 
       return ret
 

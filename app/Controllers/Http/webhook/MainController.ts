@@ -87,7 +87,8 @@ export default class MainController {
       const statusNrAttendanceApi = await new Api().mv({
         url: clientData.api_mv_url,
         token: clientData.api_mv_token,
-        nr_attendance: Body
+        nr_attendance: Body,
+        company_id: clientData.company_id
       })
 
       if (statusNrAttendanceApi) {
@@ -127,6 +128,7 @@ export default class MainController {
         url: clientData.api_mv_url,
         token: clientData.api_mv_token,
         nr_attendance: checkNumber.nr_attendance,
+        company_id: clientData.company_id,
       })
 
       if (!statusNrAttendanceApi) {

@@ -10,11 +10,11 @@ import Service from 'App/Services/Api'
 export default class XmlsController {
   public async BuildXmlSingleRequest(){
 
-  console.log('Iniciando Build XMl...')
+  //console.log('Iniciando Build XMl...')
   const dataRequest = await new RequestOutController().show()
 
   if (dataRequest != null){
-    console.log('Registro encontrado, Buildando Xml')
+    //console.log('Registro encontrado, Buildando Xml')
 
     const dataClient = await new ClientsController().show(dataRequest.movements.client_id)
 
@@ -23,11 +23,12 @@ export default class XmlsController {
       const apiMv = await new Service().dataMv({
         url: dataClient.api_mv_url,
         nr_attendance: dataRequest.nr_attendance,
-        token: dataClient.api_mv_token
+        token: dataClient.api_mv_token,
+        company_id: dataClient.company_id,
       })
 
       if (apiMv != null){
-        console.log('ok')
+        //console.log('ok')
         let content = JSON.parse(dataRequest.content)
 
         content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
@@ -69,7 +70,7 @@ export default class XmlsController {
   }
 
   public async BuildXmlSingleRequestItens(){
-    console.log('Iniciando Build XMl Itens...')
+    //console.log('Iniciando Build XMl Itens...')
 
     const dataRequest = await new RequestOutController().showItens()
 
@@ -82,7 +83,8 @@ export default class XmlsController {
         const apiMv = await new Service().dataMv({
           url: dataClient.api_mv_url,
           nr_attendance: dataRequest.nr_attendance,
-          token: dataClient.api_mv_token
+          token: dataClient.api_mv_token,
+          company_id: dataClient.company_id,
         })
 
         if (apiMv != null){

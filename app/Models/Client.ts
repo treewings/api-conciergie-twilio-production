@@ -12,6 +12,9 @@ export default class Client extends BaseModel {
   public endpoint_request: string
 
   @column()
+  public company_id: number
+
+  @column()
   public endpoint_request_itens: string
 
   @column()
