@@ -30,15 +30,13 @@ export default class SummariesController {
       activity,
       group_concat(CONCAT(' ', description , quantity)) description,
       group_concat(id) branches_movement,
+      group_concat(serviceIsPatient) serviceIsPatient,
       sum(qtd) sum_qtd,
-      quantity,
       grupo,
       accept,
       team,
       service,
-      quantity,
-      main_movement,
-	  serviceIsPatient
+      main_movement
     from (
       select
           sub_menus.description,
@@ -62,7 +60,12 @@ export default class SummariesController {
         and menus.id = movements.menu_id
         and sub_menus.id = movements.sub_menu_id
       ) as table1
-    group by activity
+    group by activity,
+    grupo,
+    accept,
+    team,
+    service,
+    main_movement
   `)
 
   }

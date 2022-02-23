@@ -75,7 +75,7 @@ export default class RequestOutsController {
             'pac.dt_nascimento': null,
             'tarefa.classif': null,
             'cmp.nm_solic': 'concierge',
-            'tsk.concierge_para_paciente': element.serviceIsPatient,
+            'tsk.concierge_para_paciente': element.serviceIsPatient == 'Sim' ? 'Sim' : (element.serviceIsPatient == 'Não' ? 'Não' : 'Sim'),
             'tsk.concierge_quantidade': element.sum_qtd,
           }
         }

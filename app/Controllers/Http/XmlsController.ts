@@ -1,5 +1,5 @@
 //import { IXmlSingleRequest } from 'App/Controllers/Interfaces/IXml'
-
+import Moment from 'moment';
 import xml2js from 'xml2js'
 import RequestOutController from 'App/Controllers/Http/RequestOutsController'
 import ClientsController from 'App/Controllers/Http/ClientsController'
@@ -38,7 +38,7 @@ export default class XmlsController {
         content.schedule.customFields["con.cd_convenio"] = apiMv.CD_CONVENIO
         content.schedule.customFields["con.nm_convenio"] = apiMv.NM_CONVENIO
         content.schedule.customFields["pac.cd_atendimento"] = apiMv.CD_ATENDIMENTO
-        content.schedule.customFields["pac.dt_nascimento"] = apiMv.DT_NASCIMENTO
+        content.schedule.customFields["pac.dt_nascimento"] = Moment(apiMv.DT_NASCIMENTO).format('D/M/Y')
 
         let dataUpdate = await new RequestOutController().update({
           id: dataRequest.id,

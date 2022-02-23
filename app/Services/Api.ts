@@ -76,10 +76,30 @@ export default class Api {
   }
 
   public async dataMv(data: IApiMV) {
-    const url = `${data.url}/${data.nr_attendance}/${data.token}`
+    const url = `${data.url}`
+    const body = {
+      i_code: data.nr_attendance,
+      consult: 'attendance',
+      company_id: data.company_id
+    }
+    const headers = {
+      ACCESS_KEY: data.token
+    }
 
-    const ret = Axios.get(url)
-      .then(function (response: any) {
+    console.log(JSON.stringify({
+      url: url,
+      data: body,
+      headers: headers
+    }))
+
+    const ret = Axios({
+        method: 'post',
+        url: url,
+        data: body,
+        headers: headers
+      }
+    ).then(function (response: any) {
+
         let status = response.data.message.status
 
         if (status == 200){
@@ -116,8 +136,9 @@ export default class Api {
 
         return null
       })
-      .catch(function () { //error
-        console.error('Axios: erro ao acessar o endpoint')
+      .catch(function (err) { //error
+        console.error('Axios: erro ao acessar o endpoint MV')
+        console.error(err)
         return null
       });
 
