@@ -19,6 +19,8 @@ export default class RequestOutsController {
 
   public async store (data: IOut) {
 
+    Moment.locale('pt-br');
+
     const summaries = await new SummariesController().showForRequest({
       client_id: data.client_id,
       main_movement: data.main_movement,
@@ -101,6 +103,8 @@ export default class RequestOutsController {
 
   public async storeItens(data: IOutItens){
 
+    Moment.locale('pt-br');
+
     const retSingleRequest = await RequestOutModel.find(data.requestOUtId)
 
     if (!retSingleRequest){
@@ -133,7 +137,7 @@ export default class RequestOutsController {
             cad_qtd_item: element.quantity,
             cad_cd_tarefa: data.task,
             cad_data_pedido: Moment().format('Y-M-D'),
-            cad_hora_pedido: Moment().format('H:m'),
+            cad_hora_pedido: Moment().format('H:mm'),
           }
         }
       }
