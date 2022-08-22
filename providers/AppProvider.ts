@@ -33,6 +33,13 @@ export default class AppProvider {
         await new XmlContr().send()
       });
     // #endregion cron send xml single request and build single request itens
+
+    // #region cron send survey
+    const SurveyController = (await import('App/Controllers/Http/SurveyController')).default
+    cron.schedule("*/10 * * * * *", async () => {
+      await new SurveyController().index()
+    });
+  // #endregion cron send survey
   }
 
   public async shutdown () {

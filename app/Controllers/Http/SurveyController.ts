@@ -1,9 +1,62 @@
-import NpsModel from 'App/Models/Survey'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import SurveyModel from 'App/Models/Survey'
+import MovementsModel from 'App/Models/Movement'
 import MovementsController from './MovementsController'
-
+import TwilioResponse from 'App/Utils/TwilioResponse'
+import Day from 'dayjs'
 export default class SurveyController {
-  public async index (data: {
+  public async index () {
+    try {
+      const surveyData = await SurveyModel.query()
+      .whereNull('contact_at')
+      .preload('request_outs')
+      .orderBy('updated_at') // orderBy, for balance in contacts
+      .first();
+      if (!surveyData) return false
+
+      const lastMovementData =
+        await MovementsModel.query()
+        .where('number', surveyData.request_outs.number)
+        .where('active', true)
+        .first();
+
+      // if in attendance for bot
+      if (lastMovementData) if (lastMovementData.status_movement_id > 2) return false
+
+      // change status in movements for survey
+      // dev here
+
+      // if the task has been completed
+      // dev here
+
+      // if all ok, get client data
+      const movementData = await MovementsModel.query().where('id', surveyData.request_outs.movement_id).preload('client').first();
+      if (!movementData) return false
+
+      // twilio message
+      // const returnTwilio = await new TwilioResponse().create({
+      //   accountSid: movementData.client.account_sid,
+      //   authToken: movementData.client.auth_token,
+      //   from: movementData.client.phone_number,
+      //   to: surveyData.request_outs.number,
+      //   message: 'oi teste'
+      // })
+      // if (!returnTwilio) return false
+
+      //console.log(surveyData.id)
+
+      surveyData.contact_at = Day().format()
+      surveyData.save()
+
+      return true;
+
+    } catch (error) {
+      console.log(error)
+    }
+
+
+  }
+
+  public async test (data: {
     checkNumber: any,
     Body: any,
     From: any,
@@ -168,7 +221,7 @@ export default class SurveyController {
   public async create () {
   }
 
-  public async store ({}: HttpContextContract) {
+  public async store () {
     // receive { in body: task_id: string }
 
     // depois de um tempo especifico da task for aberta,
@@ -178,6 +231,8 @@ export default class SurveyController {
   }
 
   public async show () {
+
+
   }
 
   public async edit () {

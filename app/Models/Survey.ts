@@ -7,13 +7,28 @@ export default class Survey extends BaseModel {
   public id: number
 
   @column()
-  public avaliation: string
+  public intention: string
+
+  @column()
+  public experience: string
 
   @column()
   public comments: string
 
   @column()
+  public request_integration: string
+
+  @column()
+  public response_integration: string
+
+  @column()
+  public contact_at: string
+
+  @column()
   public active: boolean
+
+  @column()
+  public request_outs_id: boolean
 
   @belongsTo(() => RequestOutsModel, {
     foreignKey: "request_outs_id"

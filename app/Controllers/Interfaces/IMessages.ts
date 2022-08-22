@@ -13,3 +13,11 @@ export interface IMessage {
   body: string;
   from: string;
 }
+
+export interface ICreateMessage {
+  accountSid: string,
+  authToken: string,
+  message: string,
+  to: string,
+  from: string
+}
