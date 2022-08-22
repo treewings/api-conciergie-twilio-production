@@ -62,7 +62,7 @@ export default class XmlsController {
     return false
 
   }else{
-    console.log('Nenhum Registro encontrado, para Xml')
+    //console.log('Nenhum Registro encontrado, para Xml')
   }
 
   return false
@@ -110,7 +110,7 @@ export default class XmlsController {
       return false
 
     }else{
-      console.log('Nenhum Registro encontrado, para Xml itens')
+      //console.log('Nenhum Registro encontrado, para Xml itens')
     }
 
     return false

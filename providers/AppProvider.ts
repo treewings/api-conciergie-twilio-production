@@ -12,6 +12,8 @@ export default class AppProvider {
 
   public async boot () {
     // IoC container is ready
+
+    // #feature: verify database here
   }
 
   public async ready () {
@@ -19,8 +21,8 @@ export default class AppProvider {
 
     // #region cron build xml single request
     const XmlContr = (await import('App/Controllers/Http/XmlsController')).default
-      cron.schedule("*/10 * * * * *", async () => {
-        console.log(`[${Moment().format('H:mm')}]`)
+      cron.schedule("*/10 * * * * *", async () => { //*/10 * * * * *
+        console.log(`[${Moment().format('H:mm')}] - Search requests for integration...`)
         await new XmlContr().BuildXmlSingleRequest()
         await new XmlContr().BuildXmlSingleRequestItens()
       });
