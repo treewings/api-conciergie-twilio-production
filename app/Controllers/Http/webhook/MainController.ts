@@ -50,6 +50,28 @@ export default class MainController {
     }
     //#endregion informacoes do cliente
 
+    //#region verificando se o number ja falou antes
+      const ifNumberExists = await new MovementsController().showIfExists({ number: From, client_id })
+      if (ifNumberExists) {
+        await new MovementsController().store({
+          number: From,
+          nr_attendance: ifNumberExists.nr_attendance,
+          status_movement_code: 'waiting',
+          menu_id: null,
+          submenu_id: null,
+          quantity: null,
+          main_movement: null,
+          type_attendance: null,
+          last_movement: null,
+          keep_main_movement: false,
+          client_id,
+          more_service: false,
+        })
+
+      }
+    //#endregion verificando se o number ja falou antes
+
+
     const checkNumber = await new MovementsController().show({ column: 'number', value: From, client_id })
 
 	if (checkNumber){
@@ -57,9 +79,6 @@ export default class MainController {
       objMessage.cd_setor = checkNumber.menu.setor
     }
 	}
-
-	//console.log(objMessage.cd_setor, client_id);
-
     //#region da verificacao do numero
     if (checkNumber === false) {
 
@@ -94,7 +113,7 @@ export default class MainController {
       if (statusNrAttendanceApi) {
         const storeMovement = await new MovementsController().store({
           status_movement_code: 'lobby',
-          nr_attendance: Body,
+          nr_attendance: ifNumberExists ? ifNumberExists.nr_attendance : Body,
           number: From,
           main_movement: checkNumber.main_movement,
           menu_id: null,

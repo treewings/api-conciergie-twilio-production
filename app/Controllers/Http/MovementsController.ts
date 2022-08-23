@@ -98,41 +98,54 @@ export default class MovementsController {
     let retSave = await movement.save()
 
     if (retSave){
-      const upd = await this.update(data.last_movement)
+      //const upd =
+      await this.update(data.last_movement)
 
-      if (upd && data.status_movement_code == 'end_service'){
-        const movementInit = new MovementModel()
-        const StatusMovementInit = await StatusMovementModel.findBy('cd_status_movement', 'lobby')
+      // if (upd && data.status_movement_code == 'end_service'){
+      //   const movementInit = new MovementModel()
+      //   const StatusMovementInit = await StatusMovementModel.findBy('cd_status_movement', 'lobby')
 
-        if (!StatusMovementInit){
-          return false
-        }
+      //   if (!StatusMovementInit) return false
 
-        movementInit.number             = data.number
-        movementInit.nr_attendance      = data.nr_attendance
-        movementInit.status_movement_id = StatusMovementInit.id
-        movementInit.quantity           = null
-        movementInit.client_id          = data.client_id
-        movementInit.main_movement      = null
+      //   movementInit.number             = data.number
+      //   movementInit.nr_attendance      = data.nr_attendance
+      //   movementInit.status_movement_id = StatusMovementInit.id
+      //   movementInit.quantity           = null
+      //   movementInit.client_id          = data.client_id
+      //   movementInit.main_movement      = null
 
-        const saveMovementInit = await movementInit.save()
+      //   const saveMovementInit = await movementInit.save()
 
-        if (saveMovementInit){
-          let updateSaveMovementInit = await MovementModel.find(saveMovementInit.id)
+      //   if (saveMovementInit){
+      //     let updateSaveMovementInit = await MovementModel.find(saveMovementInit.id)
 
-          if (updateSaveMovementInit){
-            updateSaveMovementInit.main_movement = updateSaveMovementInit.id
-            updateSaveMovementInit.save()
-          }
+      //     if (updateSaveMovementInit){
+      //       updateSaveMovementInit.main_movement = updateSaveMovementInit.id
+      //       updateSaveMovementInit.save()
+      //     }
 
-        }
-      }
+      //   }
+      // }
 
     }
 
 
     return movement.$isPersisted ? true : false;
 
+  }
+
+  public async showIfExists (data: {number: string, client_id: number}) {
+    console.log(`data: ${JSON.stringify(data)}`)
+    const ret = await MovementModel
+    .query()
+    //.where('nr_attendance', data.nr_attendance)
+    .where('number', data.number)
+    .where('client_id', data.client_id)
+    .whereNotNull('nr_attendance')
+
+    if (ret.find(e => e.active == true)) return false
+
+    return ret === null ? false : ret[0];
   }
 
   public async show (data: IMovementShow) {
