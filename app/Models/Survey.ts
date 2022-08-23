@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import RequestOutsModel from './RequestOut'
+import MovementModel from 'App/Models/Movement'
 
 export default class Survey extends BaseModel {
   @column({ isPrimary: true })
@@ -28,7 +29,15 @@ export default class Survey extends BaseModel {
   public active: boolean
 
   @column()
-  public request_outs_id: boolean
+  public movement_id: number
+
+  @belongsTo(() => MovementModel, {
+    foreignKey: "movement_id"
+  })
+  public movements: BelongsTo<typeof MovementModel>
+
+  @column()
+  public request_outs_id: number
 
   @belongsTo(() => RequestOutsModel, {
     foreignKey: "request_outs_id"

@@ -12,40 +12,73 @@ export default class SurveyController {
       .orderBy('updated_at') // orderBy, for balance in contacts
       .first();
       if (!surveyData) return false
-
-      const lastMovementData =
-        await MovementsModel.query()
-        .where('number', surveyData.request_outs.number)
-        .where('active', true)
-        .first();
-
-      // if in attendance for bot
-      if (lastMovementData) if (lastMovementData.status_movement_id > 2) return false
-
-      // change status in movements for survey
-      // dev here
+      console.log(`survey: ${surveyData.id}`)
 
       // if the task has been completed
       // dev here
 
-      // if all ok, get client data
-      const movementData = await MovementsModel.query().where('id', surveyData.request_outs.movement_id).preload('client').first();
-      if (!movementData) return false
+      // get client data
+      const clientData = await MovementsModel.query()
+      .where('main_movement', surveyData.request_outs.movement_id)
+      .where('status_movement_id', 9)
+      .preload('client').first();
+      if (!clientData) return false
 
-      // twilio message
-      // const returnTwilio = await new TwilioResponse().create({
-      //   accountSid: movementData.client.account_sid,
-      //   authToken: movementData.client.auth_token,
-      //   from: movementData.client.phone_number,
-      //   to: surveyData.request_outs.number,
-      //   message: 'oi teste'
-      // })
-      // if (!returnTwilio) return false
+      console.log(`client: ${clientData.id}`)
+
+      const movementData =
+        await MovementsModel.query()
+        .where('number', surveyData.request_outs.number)
+        .whereNotNull('nr_attendance')
+        .where('client_id', clientData.client_id)
+        .orderBy('id', 'desc')
+
+      // if in attendance for bot
+      if (!movementData) return false
+      const dataStoreMovemwent = movementData.find(e => e.active == true)
+      if (dataStoreMovemwent) return false
+
+      console.log(`nr_attendance: ${clientData.nr_attendance}`)
+
+      // add movement for survey
+      await new MovementsController().store({
+        number: surveyData.request_outs.number,
+        nr_attendance: clientData.nr_attendance,
+        status_movement_code: 'survey_init',
+        menu_id: null,
+        submenu_id: null,
+        quantity: null,
+        main_movement: null,
+        type_attendance: null,
+        last_movement: null,
+        keep_main_movement: false,
+        client_id: clientData.client_id,
+        more_service: false,
+      })
 
       //console.log(surveyData.id)
+      const returnMovementCreated = await MovementsModel.query()
+      .where('active', true)
+      .where('status_movement_id', 10)
+      .where('number', surveyData.request_outs.number)
+      .where('client_id', clientData.client_id)
+      .first();
 
+      if (!returnMovementCreated) return false
       surveyData.contact_at = Day().format()
+      surveyData.movement_id = returnMovementCreated.id
       surveyData.save()
+
+        // twilio message
+      const returnTwilio =
+        await new TwilioResponse().create({
+          accountSid: clientData.client.account_sid,
+          authToken: clientData.client.auth_token,
+          from: clientData.client.phone_number,
+          to: surveyData.request_outs.number,
+          message: 'oi teste'
+        })
+      if (!returnTwilio) return false
 
       return true;
 
