@@ -3,6 +3,7 @@ import MovementsModel from 'App/Models/Movement'
 import MovementsController from './MovementsController'
 import TwilioResponse from 'App/Utils/TwilioResponse'
 import Day from 'dayjs'
+import UmovMeUtil from 'App/Utils/umovMe'
 export default class SurveyController {
   public async index () {
     try {
@@ -12,10 +13,6 @@ export default class SurveyController {
       .orderBy('updated_at') // orderBy, for balance in contacts
       .first();
       if (!surveyData) return false
-      console.log(`survey: ${surveyData.id}`)
-
-      // if the task has been completed
-      // dev here
 
       // get client data
       const clientData = await MovementsModel.query()
@@ -24,8 +21,13 @@ export default class SurveyController {
       .preload('client').first();
       if (!clientData) return false
 
-      console.log(`client: ${clientData.id}`)
+      // if the task has been completed
+      const retUmov = await new UmovMeUtil().searchTaskWithStatusEnd({
+        url_base: clientData.client.endpoint_request,
+        taskId: surveyData.request_outs.return_content
+      })
 
+      if (!retUmov) return false
       const movementData =
         await MovementsModel.query()
         .where('number', surveyData.request_outs.number)
@@ -76,7 +78,7 @@ export default class SurveyController {
           authToken: clientData.client.auth_token,
           from: clientData.client.phone_number,
           to: surveyData.request_outs.number,
-          message: 'oi teste'
+          message: `Olá, gostaríamos de conhecer a sua opinião sobre o serviço solicitado:\n1\n2`
         })
       if (!returnTwilio) return false
 
