@@ -1,0 +1,6 @@
+ALTER TABLE `concierge_prd`.`clients` 
+ADD COLUMN `nps_activity` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `nps_service` VARCHAR(80) NULL AFTER `nps_activity`,
+ADD COLUMN `nps_team` VARCHAR(80) NULL AFTER `nps_service`,
+ADD COLUMN `nps_accept` VARCHAR(80) NULL AFTER `nps_team`,
+ADD COLUMN `nps_group` VARCHAR(80) NULL AFTER `nps_accept`;

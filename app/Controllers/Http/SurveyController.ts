@@ -4,6 +4,13 @@ import MovementsController from './MovementsController'
 import TwilioResponse from 'App/Utils/TwilioResponse'
 import Day from 'dayjs'
 import UmovMeUtil from 'App/Utils/umovMe'
+import SubMenuModel from 'App/Models/SubMenu'
+import ClientsModel from 'App/Models/Client'
+import ApiService from 'App/Services/Api'
+import XmlController from 'App/Controllers/Http/XmlsController'
+//interfaces
+import { IMessage } from 'App/Controllers/Interfaces/IMessages'
+
 export default class SurveyController {
   public async index () {
     try {
@@ -40,7 +47,7 @@ export default class SurveyController {
       const dataStoreMovemwent = movementData.find(e => e.active == true)
       if (dataStoreMovemwent) return false
 
-      console.log(`nr_attendance: ${clientData.nr_attendance}`)
+      console.log(`Iniciando pesquisa, atendimento: ${clientData.nr_attendance}`)
 
       // add movement for survey
       await new MovementsController().store({
@@ -58,7 +65,6 @@ export default class SurveyController {
         more_service: false,
       })
 
-      //console.log(surveyData.id)
       const returnMovementCreated = await MovementsModel.query()
       .where('active', true)
       .where('status_movement_id', 10)
@@ -71,14 +77,24 @@ export default class SurveyController {
       surveyData.movement_id = returnMovementCreated.id
       surveyData.save()
 
-        // twilio message
+
+      // Get submenu infos
+      const submenuData = await SubMenuModel
+      .query()
+      .where('menu_id', clientData.menu_id || 0)
+      .where('id', clientData.sub_menu_id || 0)
+      .first();
+
+      if (!submenuData) return false
+
+      // twilio message
       const returnTwilio =
         await new TwilioResponse().create({
           accountSid: clientData.client.account_sid,
           authToken: clientData.client.auth_token,
           from: clientData.client.phone_number,
           to: surveyData.request_outs.number,
-          message: `Olá, gostaríamos de conhecer a sua opinião sobre o serviço solicitado:\n1\n2`
+          message: `Olá, gostaríamos de conhecer a sua opinião sobre o serviço solicitado: ${submenuData.description} - ${surveyData.request_outs.return_content}, gostaria de deixar a sua a avaliação?`
         })
       if (!returnTwilio) return false
 
@@ -89,6 +105,92 @@ export default class SurveyController {
     }
 
 
+  }
+
+  public async process (data: IMessage){
+
+    if (data.cd_message == 'survey_init'){
+      if (data.body == 'Sim'){
+
+      }else if (data.body == 'Não'){
+        // atualizar survey com a intention
+        return 'survey_cancel'
+      }
+      else if (data.body == 'Ainda não atendido'){
+        // abrir a solicitacao no umovMe
+        const clientData = await ClientsModel.find(data.client_id)
+        if (!clientData) return 'error'
+
+        let activity: any = []
+        activity.push({alternativeIdentifier: clientData.survey_activity,})
+        activity.push({alternativeIdentifier: clientData.survey_accept,})
+
+        let contentJson =
+        {
+          schedule: {
+            image: {
+              id: 2294429,
+              description: 'icon32',
+              mediaType: 1,
+              publicUrl: 'https://api.umov.me/CenterWeb/media/show/2294429?1535638692540',
+              status: 2,
+            },
+            serviceLocal: {
+              alternativeIdentifier: null
+            },
+            team:{
+              alternativeIdentifier: clientData.survey_team
+            },
+            activitiesOrigin: 4,
+            teamExecution: 1,
+            date: Day().format('Y-M-D'),
+            hour: Day().format('H:mm'),
+            activityRelationship: {activity},
+            observation: clientData.survey_service,
+            priority: 0,
+            customFields: {
+              'uni.ds_unid_destino': '',
+              'uni.ds.unid_local_destino': '',
+              'uni.cd_unid_destino': '',
+              'uni.cd.unid_local_destino': '',
+              'pac.cd_paciente': null,
+              'pac.nm_paciente': null,
+              'pac.sn_vip': '',
+              'con.cd_convenio': null,
+              'con.nm_convenio': null,
+              'usr.cd_login': 'concierge',
+              'tarefa.desc': clientData.survey_description_xml,
+              'pac.cd_atendimento': null,
+              'pac.dt_nascimento': null,
+              'tarefa.classif': null,
+              'cmp.nm_solic': 'concierge',
+              'tsk.concierge_para_paciente': 'Sim',
+              'tsk.concierge_quantidade': 1,
+            }
+          }
+        }
+
+        const returnBuildXmlSurvey = await new XmlController().BuildXmlSurvey({
+          api_mv_token: clientData.api_mv_token,
+          api_mv_url: clientData.api_mv_url,
+          company_id: clientData.company_id,
+          contentXML: contentJson,
+          nr_attendance: data.nr_attendance || '0'
+        })
+        if (!returnBuildXmlSurvey) return 'error'
+
+        const rSendXml = await new ApiService().sendXmlTo3Wings({
+          url: clientData.endpoint_request,
+          xml: returnBuildXmlSurvey
+        })
+        if (!rSendXml) return 'error'
+        return 'request_not_finished'
+      }else{
+        // se mandou outro texto, que nao seja dos botoes
+      }
+    }
+
+    return 'error'
   }
 
   public async test (data: {

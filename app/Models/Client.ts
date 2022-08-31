@@ -38,6 +38,24 @@ export default class Client extends BaseModel {
   @column()
   public phone_number: string
 
+  @column()
+  public survey_activity: string
+
+  @column()
+  public survey_service: string
+
+  @column()
+  public survey_team: string
+
+  @column()
+  public survey_accept: string
+
+  @column()
+  public survey_group: string
+
+  @column()
+  public survey_description_xml: string
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

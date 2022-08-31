@@ -8,7 +8,7 @@ import Options from 'App/Utils/Options'
 import MovementsController from 'App/Controllers/Http/MovementsController'
 import ClientsController from 'App/Controllers/Http/ClientsController'
 import RequestOutController from 'App/Controllers/Http/RequestOutsController'
-
+import SurveyController from 'App/Controllers/Http/SurveyController'
 // Interfaces
 import { IMessage } from 'App/Controllers/Interfaces/IMessages'
 //import { IMovementStore } from 'App/Controllers/Interfaces/IMovement'
@@ -409,7 +409,25 @@ export default class MainController {
     }
     //#endregion confirm
 
-    return response.status(200).json({ From, Body })
+    //#region survey
+
+      if (checkNumber.status_movement.cd_status_movement === 'survey_init') {
+        objMessage.main_movement = !checkNumber.main_movement ? checkNumber.id : checkNumber.main_movement
+        objMessage.nr_attendance = checkNumber.nr_attendance || '0'
+        const npsReturn = await new SurveyController().process(objMessage)
+
+        if (!npsReturn) {
+          objMessage.cd_message = 'error'
+          return new TwilioResponse().send(objMessage)
+        }
+
+        objMessage.cd_message = npsReturn
+        return new TwilioResponse().send(objMessage)
+      }
+
+    //#endregion survey
+
+    return response.status(200).json(objMessage)
 
   }
 

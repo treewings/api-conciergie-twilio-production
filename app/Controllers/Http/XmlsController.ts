@@ -117,6 +117,44 @@ export default class XmlsController {
 
   }
 
+  public async BuildXmlSurvey(data: {
+    contentXML: object, api_mv_url: string, api_mv_token: string, nr_attendance: string, company_id: number
+  }){
+
+    if (!data.contentXML){
+
+        const apiMv = await new Service().dataMv({
+          url: data.api_mv_url,
+          nr_attendance: data.nr_attendance,
+          token: data.api_mv_token,
+          company_id: data.company_id,
+        })
+
+        if (apiMv != null){
+          //console.log('ok')
+          let content = JSON.parse(data.contentXML)
+
+          content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
+          content.schedule.customFields["pac.cd_paciente"] = apiMv.CD_PACIENTE
+          content.schedule.customFields["pac.nm_paciente"] = apiMv.NM_PACIENTE
+          content.schedule.customFields["pac.sn_vip"] = apiMv.SN_VIP
+          content.schedule.customFields["con.cd_convenio"] = apiMv.CD_CONVENIO
+          content.schedule.customFields["con.nm_convenio"] = apiMv.NM_CONVENIO
+          content.schedule.customFields["pac.cd_atendimento"] = apiMv.CD_ATENDIMENTO
+          content.schedule.customFields["pac.dt_nascimento"] = Moment(apiMv.DT_NASCIMENTO).format('D/M/Y')
+
+          return await this.jsonToXml(content)
+
+        }else{
+          return false
+        }
+
+    }else{
+      return false
+    }
+
+  }
+
   public async send(){ // envia o single Xml e builda os itens, depois envia tudo
 
     const dataRequest = await new RequestOutController().showSend()
