@@ -38,6 +38,7 @@
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.20",
     "twilio": "^3.69.0",
+    "winston": "^3.8.1",
     "xml2js": "^0.4.23"
   }
 }

@@ -6,6 +6,7 @@ import StatusMovement from './StatusMovement'
 import Menu from './Menu'
 import SubMenu from './SubMenu'
 import Client from './Client'
+import Survey from './Survey'
 
 export default class Movement extends BaseModel {
   @column({ isPrimary: true })
@@ -22,7 +23,7 @@ export default class Movement extends BaseModel {
 
   @column()
   public main_movement: number | null
-  
+
   @column()
   public type_attendance: number | null
 
@@ -57,6 +58,14 @@ export default class Movement extends BaseModel {
 
   @column()
   public active: boolean
+
+  @column()
+  public survey_id: number | null
+
+  @belongsTo(() => Survey, {
+    foreignKey: 'survey_id',
+  })
+  public survey: BelongsTo<typeof Survey>
 
   @column()
   public quantity: string | null

@@ -1,6 +1,11 @@
-ALTER TABLE `concierge_prd`.`clients` 
-ADD COLUMN `nps_activity` VARCHAR(80) NULL AFTER `updated_at`,
-ADD COLUMN `nps_service` VARCHAR(80) NULL AFTER `nps_activity`,
-ADD COLUMN `nps_team` VARCHAR(80) NULL AFTER `nps_service`,
-ADD COLUMN `nps_accept` VARCHAR(80) NULL AFTER `nps_team`,
-ADD COLUMN `nps_group` VARCHAR(80) NULL AFTER `nps_accept`;
+ALTER TABLE `concierge_prd`.`clients`
+ADD COLUMN `survey_activity` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_service` VARCHAR(80) NULL AFTER `survey_activity`,
+ADD COLUMN `survey_team` VARCHAR(80) NULL AFTER `survey_service`,
+ADD COLUMN `survey_accept` VARCHAR(80) NULL AFTER `survey_team`,
+ADD COLUMN `survey_group` VARCHAR(80) NULL AFTER `survey_accept`;
+
+--------------------------------------------------------------------------------
+
+ALTER TABLE `concierge_prd`.`movements`
+ADD COLUMN `survey_id` INT(10) NULL AFTER `updated_at`,

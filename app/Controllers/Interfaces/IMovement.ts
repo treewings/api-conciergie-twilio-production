@@ -12,6 +12,7 @@ export interface IMovementStore {
   client_id: number;
   more_service?: boolean;
   keep_main_movement?: boolean;
+  survey_id?: number;
 }
 
 export interface IMovementShow {

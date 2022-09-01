@@ -7,7 +7,7 @@ export default class Api {
   public async mv(data: IApiMV) {
     const url = `${data.url}`
     let dataTranslate = {
-      CD_SETOR_LEITO: `1181-1141`,
+      CD_SETOR_LEITO: `252-1686`,
       SN_VIP: false,
       CD_ATENDIMENTO: 3927539,
       CD_PACIENTE: 2332869,
@@ -29,7 +29,7 @@ export default class Api {
     const url = `${data.url}`
 
     let dataTranslate = {
-      CD_SETOR_LEITO: `1181-1141`,
+      CD_SETOR_LEITO: `252-1686`,
       SN_VIP: false,
       CD_ATENDIMENTO: 3927539,
       CD_PACIENTE: 2332869,

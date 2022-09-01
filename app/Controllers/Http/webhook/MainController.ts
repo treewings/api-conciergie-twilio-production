@@ -414,6 +414,7 @@ export default class MainController {
       if (checkNumber.status_movement.cd_status_movement === 'survey_init') {
         objMessage.main_movement = !checkNumber.main_movement ? checkNumber.id : checkNumber.main_movement
         objMessage.nr_attendance = checkNumber.nr_attendance || '0'
+        objMessage.cd_message = 'survey_init' // only, for parameter in controller of survey
         const npsReturn = await new SurveyController().process(objMessage)
 
         if (!npsReturn) {

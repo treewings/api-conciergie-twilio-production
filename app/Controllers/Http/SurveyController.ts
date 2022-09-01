@@ -1,13 +1,21 @@
-import SurveyModel from 'App/Models/Survey'
-import MovementsModel from 'App/Models/Movement'
-import MovementsController from './MovementsController'
-import TwilioResponse from 'App/Utils/TwilioResponse'
 import Day from 'dayjs'
-import UmovMeUtil from 'App/Utils/umovMe'
+
+//Controllers
+import MovementsController from './MovementsController'
+import XmlController from 'App/Controllers/Http/XmlsController'
+
+//Models
 import SubMenuModel from 'App/Models/SubMenu'
 import ClientsModel from 'App/Models/Client'
+import SurveyModel from 'App/Models/Survey'
+import MovementsModel from 'App/Models/Movement'
+
+//utils
+import UmovMeUtil from 'App/Utils/umovMe'
 import ApiService from 'App/Services/Api'
-import XmlController from 'App/Controllers/Http/XmlsController'
+import TwilioResponse from 'App/Utils/TwilioResponse'
+import Log from 'App/Utils/logs'
+
 //interfaces
 import { IMessage } from 'App/Controllers/Interfaces/IMessages'
 
@@ -63,6 +71,7 @@ export default class SurveyController {
         keep_main_movement: false,
         client_id: clientData.client_id,
         more_service: false,
+        survey_id: surveyData.id
       })
 
       const returnMovementCreated = await MovementsModel.query()
@@ -109,14 +118,51 @@ export default class SurveyController {
 
   public async process (data: IMessage){
 
-    if (data.cd_message == 'survey_init'){
-      if (data.body == 'Sim'){
+    // get datas, movement and survey
+    const movementData = await MovementsModel.find(data.main_movement)
+    if (!movementData) {
+      Log.error(`No movementData found, data: ${JSON.stringify(data)}`)
+      return `error`
+    }
 
-      }else if (data.body == 'Não'){
-        // atualizar survey com a intention
+    const surveyData = await SurveyModel.find(movementData.survey_id)
+    if (!surveyData) {
+      Log.error(`No surveyData found, movementData: ${JSON.stringify(movementData)}`)
+      return `error`
+    }
+
+    // case stop survey
+    if (
+      data.body.toUpperCase() == 'SAIR' ||
+      data.body.toUpperCase() == 'PARAR'||
+      data.body.toUpperCase() == '0'
+      ){
+        movementData.active = false
+        movementData.save()
+
+        surveyData.intention = 'stop'
+        surveyData.save()
+
+        Log.info(`Survey: ${surveyData.id} -> Intention: stop`)
         return 'survey_cancel'
-      }
-      else if (data.body == 'Ainda não atendido'){
+    }
+
+    if (data.cd_message == 'survey_init'){
+      if (data.body.toUpperCase() == 'SIM'){
+        // CONTINUE HERE
+
+      }else if (data.body.toUpperCase() == 'NÃO' || data.body.toUpperCase() == 'NAO'){
+
+        movementData.active = false
+        movementData.save()
+
+        surveyData.intention = 'negative'
+        surveyData.save()
+
+        Log.info(`Survey: ${surveyData.id} -> Intention: negative`)
+        return 'survey_cancel'
+
+      }else if (data.body.toUpperCase() == 'AINDA NÃO ATENDIDO' || data.body.toUpperCase() == 'AINDA NAO ATENDIDO'){
         // abrir a solicitacao no umovMe
         const clientData = await ClientsModel.find(data.client_id)
         if (!clientData) return 'error'
@@ -143,8 +189,8 @@ export default class SurveyController {
             },
             activitiesOrigin: 4,
             teamExecution: 1,
-            date: Day().format('Y-M-D'),
-            hour: Day().format('H:mm'),
+            date: Day().format('YYYY-MM-DD'),
+            hour: Day().format('HH:mm'),
             activityRelationship: {activity},
             observation: clientData.survey_service,
             priority: 0,
@@ -174,185 +220,47 @@ export default class SurveyController {
           api_mv_token: clientData.api_mv_token,
           api_mv_url: clientData.api_mv_url,
           company_id: clientData.company_id,
-          contentXML: contentJson,
+          content: contentJson,
           nr_attendance: data.nr_attendance || '0'
         })
-        if (!returnBuildXmlSurvey) return 'error'
+        if (!returnBuildXmlSurvey) {
+          Log.error(`Build xml error, data: ${JSON.stringify({
+            api_mv_token: clientData.api_mv_token,
+            api_mv_url: clientData.api_mv_url,
+            company_id: clientData.company_id,
+            contentXML: contentJson,
+            nr_attendance: data.nr_attendance || '0'
+          })}`)
+          return 'error'
+        }
 
         const rSendXml = await new ApiService().sendXmlTo3Wings({
           url: clientData.endpoint_request,
           xml: returnBuildXmlSurvey
         })
-        if (!rSendXml) return 'error'
+        if (!rSendXml) {
+          Log.error(`Send xml error, url: ${clientData.endpoint_request}, xml: ${returnBuildXmlSurvey}`)
+          return 'error'
+        }
+
+        movementData.active = false
+        movementData.save()
+
+        surveyData.request_integration = returnBuildXmlSurvey
+        surveyData.response_integration = rSendXml
+        surveyData.intention = 'request_not_finished'
+        surveyData.save()
         return 'request_not_finished'
+
       }else{
         // se mandou outro texto, que nao seja dos botoes
+        return 'option_invalid'
       }
     }
 
+    // case not status in survey
+    Log.error(`Survey: status not found, data: ${JSON.stringify(data)}`)
     return 'error'
-  }
-
-  public async test (data: {
-    checkNumber: any,
-    Body: any,
-    From: any,
-    client_id: any,
-    objMessage: any
-  }) {
-    // process nps here
-    // model: NpsModel
-
-    // esse controller previamente sera chamado por uma cron
-    // que devera verificar se ha alguma pesquisa para ser feita,
-    // o que chegar aqui é porque nao tem conversa corrente,
-
-    // indentificando isso ja é necessario inativar a linha
-    // de lobby que foi criada no fim do atendimento e começar a pesquisa
-
-
-    if(data.checkNumber.status_movement.cd_status_movement == "nps"){
-
-      if(!(data.Body == 1 || data.Body == 3)){
-        await new MovementsController().store({
-          status_movement_code: 'nps_ending',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-        data.objMessage.cd_message = 'no_nps'
-      return data.objMessage
-      }
-
-      if(data.Body == 1){
-        await new MovementsController().store({
-          status_movement_code: 'nps_waiting',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-
-        data.objMessage.cd_message = 'nps_positive_msg_1'
-        return data.objMessage
-      }
-
-      if(data.Body == 3){
-        await new MovementsController().store({
-          status_movement_code: 'nps_ending',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-
-        data.objMessage.cd_message = 'no_request_nps'
-        return data.objMessage
-      }
-
-    }
-
-    if(data.checkNumber.status_movement.cd_status_movement == "nps_waiting"){
-
-      //Valor que irá abrir uma nova tarefa.
-      //Ainda a se fazer
-      const x = 6;
-
-      if(!(data.Body >= 0 && data.Body <=10)){
-        await new MovementsController().store({
-          status_movement_code: 'nps_ending',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-      }else{
-        data.objMessage.cd_message = 'nps_positive_msg_2'
-
-        await new MovementsController().store({
-          status_movement_code: 'nps_user_comments',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-
-        if(data.Body < x){
-
-        }
-
-        //Objeto para alimentar a model de nps
-        //Ainda n'ao implementado
-        const body = {
-          request_number: '',
-          task_group: '',
-          task:'',
-          agent:'',
-          request_hour:'',
-          request_complete_hour:'',
-        }
-
-        return data.objMessage
-      }
-    }
-
-    if(data.checkNumber.status_movement.cd_status_movement == "nps_user_comments"){
-      if(data.Body == 0){
-        await new MovementsController().store({
-          status_movement_code: 'nps_ending',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-      }
-
-      if(data.Body == 1){
-        await new MovementsController().store({
-          status_movement_code: 'nps_ending',
-          nr_attendance: data.checkNumber.nr_attendance,
-          number: data.From,
-          main_movement: data.checkNumber.main_movement,
-          menu_id: data.checkNumber.menu_id,
-          submenu_id: data.checkNumber.sub_menu_id,
-          quantity: null,
-          last_movement: data.checkNumber.id,
-          client_id: data.client_id,
-        })
-
-        // Constante para guardar o comentário a model
-        // Ainda não implementado
-        const dataReturn = {
-          nps_comment:''
-        }
-      }
-    }
-
   }
 
   public async create () {

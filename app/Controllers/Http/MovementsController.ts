@@ -24,6 +24,7 @@ export default class MovementsController {
 
     const movement = new MovementModel()
 
+    movement.survey_id          = data.survey_id || null
     movement.number             = data.number
     movement.nr_attendance      = data.nr_attendance
     movement.status_movement_id = StatusMovement.id

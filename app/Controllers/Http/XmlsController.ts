@@ -4,8 +4,7 @@ import xml2js from 'xml2js'
 import RequestOutController from 'App/Controllers/Http/RequestOutsController'
 import ClientsController from 'App/Controllers/Http/ClientsController'
 import Api from 'App/Services/Api'
-
-import Service from 'App/Services/Api'
+import Log from 'App/Utils/logs'
 
 export default class XmlsController {
   public async BuildXmlSingleRequest(){
@@ -20,7 +19,7 @@ export default class XmlsController {
 
     if (dataClient != null){
 
-      const apiMv = await new Service().dataMv({
+      const apiMv = await new Api().dataMv({
         url: dataClient.api_mv_url,
         nr_attendance: dataRequest.nr_attendance,
         token: dataClient.api_mv_token,
@@ -80,7 +79,7 @@ export default class XmlsController {
 
       if (dataClient != null){
 
-        const apiMv = await new Service().dataMv({
+        const apiMv = await new Api().dataMv({
           url: dataClient.api_mv_url,
           nr_attendance: dataRequest.nr_attendance,
           token: dataClient.api_mv_token,
@@ -118,41 +117,37 @@ export default class XmlsController {
   }
 
   public async BuildXmlSurvey(data: {
-    contentXML: object, api_mv_url: string, api_mv_token: string, nr_attendance: string, company_id: number
+    content: any, api_mv_url: string, api_mv_token: string, nr_attendance: string, company_id: number
   }){
 
-    if (!data.contentXML){
+    Log.info(`Build XML -> Data: ${JSON.stringify(data)}`)
 
-        const apiMv = await new Service().dataMv({
+        const apiMv = await new Api().dataMv({
           url: data.api_mv_url,
           nr_attendance: data.nr_attendance,
           token: data.api_mv_token,
           company_id: data.company_id,
         })
 
+        Log.info(`Build XML: Retorno api, ${JSON.stringify(apiMv)}`)
+
         if (apiMv != null){
-          //console.log('ok')
-          let content = JSON.parse(data.contentXML)
 
-          content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
-          content.schedule.customFields["pac.cd_paciente"] = apiMv.CD_PACIENTE
-          content.schedule.customFields["pac.nm_paciente"] = apiMv.NM_PACIENTE
-          content.schedule.customFields["pac.sn_vip"] = apiMv.SN_VIP
-          content.schedule.customFields["con.cd_convenio"] = apiMv.CD_CONVENIO
-          content.schedule.customFields["con.nm_convenio"] = apiMv.NM_CONVENIO
-          content.schedule.customFields["pac.cd_atendimento"] = apiMv.CD_ATENDIMENTO
-          content.schedule.customFields["pac.dt_nascimento"] = Moment(apiMv.DT_NASCIMENTO).format('D/M/Y')
+          data.content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
+          data.content.schedule.customFields["pac.cd_paciente"] = apiMv.CD_PACIENTE
+          data.content.schedule.customFields["pac.nm_paciente"] = apiMv.NM_PACIENTE
+          data.content.schedule.customFields["pac.sn_vip"] = apiMv.SN_VIP
+          data.content.schedule.customFields["con.cd_convenio"] = apiMv.CD_CONVENIO
+          data.content.schedule.customFields["con.nm_convenio"] = apiMv.NM_CONVENIO
+          data.content.schedule.customFields["pac.cd_atendimento"] = apiMv.CD_ATENDIMENTO
+          data.content.schedule.customFields["pac.dt_nascimento"] = Moment(apiMv.DT_NASCIMENTO).format('D/M/Y')
 
-          return await this.jsonToXml(content)
+          return await this.jsonToXml(data.content)
 
         }else{
+          Log.error(`XmlsController -> Build XML Survey: error`)
           return false
         }
-
-    }else{
-      return false
-    }
-
   }
 
   public async send(){ // envia o single Xml e builda os itens, depois envia tudo
