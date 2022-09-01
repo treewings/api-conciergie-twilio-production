@@ -149,7 +149,34 @@ export default class SurveyController {
 
     if (data.cd_message == 'survey_init'){
       if (data.body.toUpperCase() == 'SIM'){
-        // CONTINUE HERE
+        movementData.active = false
+        movementData.save()
+
+        const newMovement = await new MovementsController().store({
+          number: movementData.number,
+          nr_attendance: movementData.nr_attendance,
+          status_movement_code: 'survey_experience',
+          menu_id: null,
+          submenu_id: null,
+          quantity: null,
+          main_movement: null,
+          type_attendance: null,
+          last_movement: null,
+          keep_main_movement: false,
+          client_id: movementData.client_id,
+          more_service: false,
+          survey_id: surveyData.id
+        })
+
+        if (!newMovement) {
+          Log.error(`Survey: Error in create new movement, intention: positive, survey_id: ${surveyData.id}`)
+          return `error`
+        }
+
+        surveyData.intention = `positive`
+        surveyData.save()
+
+        return 'survey_experience'
 
       }else if (data.body.toUpperCase() == 'NÃO' || data.body.toUpperCase() == 'NAO'){
 
@@ -163,91 +190,20 @@ export default class SurveyController {
         return 'survey_cancel'
 
       }else if (data.body.toUpperCase() == 'AINDA NÃO ATENDIDO' || data.body.toUpperCase() == 'AINDA NAO ATENDIDO'){
+        // get submenu description
+
+        const subMenuData = await SubMenuModel.find(surveyData.submenu_id)
+        if (!subMenuData) return `error`
         // abrir a solicitacao no umovMe
-        const clientData = await ClientsModel.find(data.client_id)
-        if (!clientData) return 'error'
+        const retOpenTaskUmovMe = await this.openTaskUmovMe(data, `no_finished`, subMenuData.description)
 
-        let activity: any = []
-        activity.push({alternativeIdentifier: clientData.survey_activity,})
-        activity.push({alternativeIdentifier: clientData.survey_accept,})
-
-        let contentJson =
-        {
-          schedule: {
-            image: {
-              id: 2294429,
-              description: 'icon32',
-              mediaType: 1,
-              publicUrl: 'https://api.umov.me/CenterWeb/media/show/2294429?1535638692540',
-              status: 2,
-            },
-            serviceLocal: {
-              alternativeIdentifier: null
-            },
-            team:{
-              alternativeIdentifier: clientData.survey_team
-            },
-            activitiesOrigin: 4,
-            teamExecution: 1,
-            date: Day().format('YYYY-MM-DD'),
-            hour: Day().format('HH:mm'),
-            activityRelationship: {activity},
-            observation: clientData.survey_service,
-            priority: 0,
-            customFields: {
-              'uni.ds_unid_destino': '',
-              'uni.ds.unid_local_destino': '',
-              'uni.cd_unid_destino': '',
-              'uni.cd.unid_local_destino': '',
-              'pac.cd_paciente': null,
-              'pac.nm_paciente': null,
-              'pac.sn_vip': '',
-              'con.cd_convenio': null,
-              'con.nm_convenio': null,
-              'usr.cd_login': 'concierge',
-              'tarefa.desc': clientData.survey_description_xml,
-              'pac.cd_atendimento': null,
-              'pac.dt_nascimento': null,
-              'tarefa.classif': null,
-              'cmp.nm_solic': 'concierge',
-              'tsk.concierge_para_paciente': 'Sim',
-              'tsk.concierge_quantidade': 1,
-            }
-          }
-        }
-
-        const returnBuildXmlSurvey = await new XmlController().BuildXmlSurvey({
-          api_mv_token: clientData.api_mv_token,
-          api_mv_url: clientData.api_mv_url,
-          company_id: clientData.company_id,
-          content: contentJson,
-          nr_attendance: data.nr_attendance || '0'
-        })
-        if (!returnBuildXmlSurvey) {
-          Log.error(`Build xml error, data: ${JSON.stringify({
-            api_mv_token: clientData.api_mv_token,
-            api_mv_url: clientData.api_mv_url,
-            company_id: clientData.company_id,
-            contentXML: contentJson,
-            nr_attendance: data.nr_attendance || '0'
-          })}`)
-          return 'error'
-        }
-
-        const rSendXml = await new ApiService().sendXmlTo3Wings({
-          url: clientData.endpoint_request,
-          xml: returnBuildXmlSurvey
-        })
-        if (!rSendXml) {
-          Log.error(`Send xml error, url: ${clientData.endpoint_request}, xml: ${returnBuildXmlSurvey}`)
-          return 'error'
-        }
+        if (!retOpenTaskUmovMe) return `error`
 
         movementData.active = false
         movementData.save()
 
-        surveyData.request_integration = returnBuildXmlSurvey
-        surveyData.response_integration = rSendXml
+        surveyData.request_integration = retOpenTaskUmovMe.xml
+        surveyData.response_integration = retOpenTaskUmovMe.return
         surveyData.intention = 'request_not_finished'
         surveyData.save()
         return 'request_not_finished'
@@ -256,6 +212,41 @@ export default class SurveyController {
         // se mandou outro texto, que nao seja dos botoes
         return 'option_invalid'
       }
+    }else if (data.cd_message == 'survey_experience'){
+
+      if (typeof +data.body == 'number'){
+
+        if (+data.body > movementData.client.survey_min_experience){
+          // abrir solicitacao
+        }
+
+        const newMovement = await new MovementsController().store({
+          number: movementData.number,
+          nr_attendance: movementData.nr_attendance,
+          status_movement_code: 'survey_comments',
+          menu_id: null,
+          submenu_id: null,
+          quantity: null,
+          main_movement: null,
+          type_attendance: null,
+          last_movement: null,
+          keep_main_movement: false,
+          client_id: movementData.client_id,
+          more_service: false,
+          survey_id: surveyData.id
+        })
+
+        if (!newMovement) {
+          Log.error(`Survey: Error in create new movement, experience: ${data.body}, survey_id: ${surveyData.id}`)
+          return `error`
+        }
+
+        surveyData.experience = data.body
+        surveyData.save()
+
+        return 'survey_comments'
+      }
+      return `error`
     }
 
     // case not status in survey
@@ -263,29 +254,96 @@ export default class SurveyController {
     return 'error'
   }
 
-  public async create () {
-  }
+  public async openTaskUmovMe(data: IMessage, type: 'no_finished' | 'experience', descriptionSubMenu?: string){
+    // abrir a solicitacao no umovMe
+    const clientData = await ClientsModel.find(data.client_id)
+    if (!clientData) return false
 
-  public async store () {
-    // receive { in body: task_id: string }
+    let alternativeIdentifier_team = type == `no_finished` ? clientData.survey_no_finished_team : clientData.survey_exp_team
+    let observation = type == `no_finished` ? clientData.survey_no_finished_service : clientData.survey_exp_service
+    let description = type == `no_finished` ? descriptionSubMenu : clientData.survey_exp_description
+    let surveyActivity = type == `no_finished` ? clientData.survey_no_finished_activity : clientData.survey_exp_activity
+    let surveyAccept = type == `no_finished` ? clientData.survey_no_finished_accept : clientData.survey_exp_accept
+    let activity: any = []
+    activity.push({alternativeIdentifier: surveyActivity,})
+    activity.push({alternativeIdentifier: surveyAccept,})
 
-    // depois de um tempo especifico da task for aberta,
-    // um service vai enviar um request para esse controller
-    // nesse momento, criar uma linha na tabela do nps,
-    // aguardando para ser iniciada
-  }
+    let contentJson =
+    {
+      schedule: {
+        image: {
+          id: 2294429,
+          description: 'icon32',
+          mediaType: 1,
+          publicUrl: 'https://api.umov.me/CenterWeb/media/show/2294429?1535638692540',
+          status: 2,
+        },
+        serviceLocal: {
+          alternativeIdentifier: null
+        },
+        team:{
+          alternativeIdentifier: alternativeIdentifier_team
+        },
+        activitiesOrigin: 4,
+        teamExecution: 1,
+        date: Day().format('YYYY-MM-DD'),
+        hour: Day().format('HH:mm'),
+        activityRelationship: {activity},
+        observation,
+        priority: 0,
+        customFields: {
+          'uni.ds_unid_destino': '',
+          'uni.ds.unid_local_destino': '',
+          'uni.cd_unid_destino': '',
+          'uni.cd.unid_local_destino': '',
+          'pac.cd_paciente': null,
+          'pac.nm_paciente': null,
+          'pac.sn_vip': '',
+          'con.cd_convenio': null,
+          'con.nm_convenio': null,
+          'usr.cd_login': 'concierge',
+          'tarefa.desc': description,
+          'pac.cd_atendimento': null,
+          'pac.dt_nascimento': null,
+          'tarefa.classif': null,
+          'cmp.nm_solic': 'concierge',
+          'tsk.concierge_para_paciente': 'Sim',
+          'tsk.concierge_quantidade': 1,
+        }
+      }
+    }
 
-  public async show () {
+    const returnBuildXmlSurvey = await new XmlController().BuildXmlSurvey({
+      api_mv_token: clientData.api_mv_token,
+      api_mv_url: clientData.api_mv_url,
+      company_id: clientData.company_id,
+      content: contentJson,
+      nr_attendance: data.nr_attendance || '0'
+    })
+    if (!returnBuildXmlSurvey) {
+      Log.error(`Build xml error, data: ${JSON.stringify({
+        api_mv_token: clientData.api_mv_token,
+        api_mv_url: clientData.api_mv_url,
+        company_id: clientData.company_id,
+        contentXML: contentJson,
+        nr_attendance: data.nr_attendance || '0'
+      })}`)
+      return false
+    }
 
+    const rSendXml = await new ApiService().sendXmlTo3Wings({
+      url: clientData.endpoint_request,
+      xml: returnBuildXmlSurvey
+    })
+    if (!rSendXml) {
+      Log.error(`Send xml error, url: ${clientData.endpoint_request}, xml: ${returnBuildXmlSurvey}`)
+      return false
+    }
 
-  }
+    return {
+      xml: returnBuildXmlSurvey,
+      return: rSendXml
+    }
 
-  public async edit () {
-  }
-
-  public async update () {
-  }
-
-  public async destroy () {
   }
 }

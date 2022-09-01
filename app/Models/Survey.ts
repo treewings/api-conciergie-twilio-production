@@ -25,8 +25,11 @@ export default class Survey extends BaseModel {
   @column()
   public contact_at: string
 
+  // @column()
+  // public active: boolean
+
   @column()
-  public active: boolean
+  public submenu_id: number
 
   @column()
   public movement_id: number

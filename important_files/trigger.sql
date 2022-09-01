@@ -6,10 +6,12 @@ BEGIN
   DECLARE c_movements CURSOR FOR
   select
   sub_menus.id submenu_id
-  from movements, menus, sub_menus
+  from movements, menus, sub_menus, clients
   where
   movements.status_movement_id = 7
   and movements.id in (new.branches_movement)
+  and movements.client_id = clients.id
+  and clients.active_survey = true
   and menus.id = movements.menu_id
   and sub_menus.id = movements.sub_menu_id;
 
@@ -27,9 +29,9 @@ BEGIN
     END IF;
 
       INSERT INTO CONCIERGE_PRD.SURVEYS
-        ( `request_outs_id` )
+        ( `request_outs_id`, `submenu_id` )
       VALUES
-        (new.id);
+        (new.id, v_movement);
 
     END LOOP movement_loop;
 

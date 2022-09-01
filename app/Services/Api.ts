@@ -16,7 +16,7 @@ export default class Api {
       NM_CONVENIO: 'AMIL ASSIST MED - GRUPO AMIL',
       DT_NASCIMENTO: '1977-05-17 02:00:00',
       TELEFONE: '21988691929',
-      CD_SETOR: 1181,
+      CD_SETOR: 252,
       PREUCAUCAO: null,
       url
     }
@@ -38,7 +38,7 @@ export default class Api {
       NM_CONVENIO: 'AMIL ASSIST MED - GRUPO AMIL',
       DT_NASCIMENTO: '1977-05-17 02:00:00',
       TELEFONE: '21988691929',
-      CD_SETOR: 1181,
+      CD_SETOR: 252,
       PREUCAUCAO: null,
       url
     }

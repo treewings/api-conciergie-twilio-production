@@ -30,6 +30,9 @@ export default class Client extends BaseModel {
   public active_send_request: boolean
 
   @column()
+  public active_survey: boolean
+
+  @column()
   public account_sid: string
 
   @column()
@@ -39,22 +42,41 @@ export default class Client extends BaseModel {
   public phone_number: string
 
   @column()
-  public survey_activity: string
+  public survey_min_experience: number
 
   @column()
-  public survey_service: string
+  public survey_exp_activity: string
 
   @column()
-  public survey_team: string
+  public survey_exp_service: string
 
   @column()
-  public survey_accept: string
+  public survey_exp_team: string
 
   @column()
-  public survey_group: string
+  public survey_exp_accept: string
 
   @column()
-  public survey_description_xml: string
+  public survey_exp_group: string
+
+  @column()
+  public survey_exp_description: string
+
+  @column()
+  public survey_no_finished_activity: string
+
+  @column()
+  public survey_no_finished_service: string
+
+  @column()
+  public survey_no_finished_team: string
+
+  @column()
+  public survey_no_finished_accept: string
+
+  @column()
+  public survey_no_finished_group: string
+
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

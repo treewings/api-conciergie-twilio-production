@@ -9,3 +9,11 @@ ADD COLUMN `survey_group` VARCHAR(80) NULL AFTER `survey_accept`;
 
 ALTER TABLE `concierge_prd`.`movements`
 ADD COLUMN `survey_id` INT(10) NULL AFTER `updated_at`,
+
+--------------------------------------------------------------------------------
+
+
+insert into concierge_prd.messages
+(cd_message, description)
+values
+('survey_experience', 'Considerando a sua experiência com o serviço solicitado: * parService *, em uma escala de 0 a 10, onde 0 é muito ruim e 10 é muito boa, que pontuação você daria?');
