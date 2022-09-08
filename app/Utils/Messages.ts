@@ -26,7 +26,7 @@ export default class Messages {
         const splitDescription = retMessage?.description.split('_client_')
 
         if (splitDescription){
-          console.log(`aqui: ${splitDescription[1]}`)
+          // console.log(`aqui: ${splitDescription[1]}`)
 
           return retMessage === null ? '' : splitDescription[0] + client?.description + splitDescription[2];
 
@@ -216,6 +216,12 @@ export default class Messages {
         return `${retMessage?.description} \n${retMenu}`
       }
 
+      if (data.cd_message == 'survey_experience') {
+        if (!retMessage) return `Mensagem não encontrada`
+        const SubMenuData = await new SubMenuController().showFromId({submenu_id: data.submenu_id || 0})
+        if (!SubMenuData) return `Mensagem não encontrada`
+        return retMessage.description.replace(`parService`, SubMenuData.description)
+      }
 
       return retMessage === null ? '' : retMessage.description;
     }

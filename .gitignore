@@ -6,3 +6,5 @@ coverage
 .env
 tmp
 .log
+general.log
+important_files

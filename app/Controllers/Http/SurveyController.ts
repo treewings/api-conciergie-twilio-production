@@ -88,11 +88,7 @@ export default class SurveyController {
 
 
       // Get submenu infos
-      const submenuData = await SubMenuModel
-      .query()
-      .where('menu_id', clientData.menu_id || 0)
-      .where('id', clientData.sub_menu_id || 0)
-      .first();
+      const submenuData = await SubMenuModel.find(surveyData.submenu_id)
 
       if (!submenuData) return false
 
@@ -119,16 +115,16 @@ export default class SurveyController {
   public async process (data: IMessage){
 
     // get datas, movement and survey
-    const movementData = await MovementsModel.find(data.main_movement)
+    const movementData = await MovementsModel.query().where(`id` ,data.main_movement || 0).preload(`client`).first()
+
     if (!movementData) {
       Log.error(`No movementData found, data: ${JSON.stringify(data)}`)
-      return `error`
+      return {cd_message: 'error', submenu_id: null}
     }
-
     const surveyData = await SurveyModel.find(movementData.survey_id)
     if (!surveyData) {
       Log.error(`No surveyData found, movementData: ${JSON.stringify(movementData)}`)
-      return `error`
+      return {cd_message: 'error', submenu_id: null}
     }
 
     // case stop survey
@@ -144,7 +140,7 @@ export default class SurveyController {
         surveyData.save()
 
         Log.info(`Survey: ${surveyData.id} -> Intention: stop`)
-        return 'survey_cancel'
+        return {cd_message: 'survey_cancel', submenu_id: null}
     }
 
     if (data.cd_message == 'survey_init'){
@@ -170,13 +166,13 @@ export default class SurveyController {
 
         if (!newMovement) {
           Log.error(`Survey: Error in create new movement, intention: positive, survey_id: ${surveyData.id}`)
-          return `error`
+          return {cd_message: 'error', submenu_id: null}
         }
 
         surveyData.intention = `positive`
         surveyData.save()
 
-        return 'survey_experience'
+        return {cd_message: 'survey_experience', submenu_id: surveyData.submenu_id}
 
       }else if (data.body.toUpperCase() == 'NÃO' || data.body.toUpperCase() == 'NAO'){
 
@@ -187,17 +183,14 @@ export default class SurveyController {
         surveyData.save()
 
         Log.info(`Survey: ${surveyData.id} -> Intention: negative`)
-        return 'survey_cancel'
+        return {cd_message: 'survey_cancel', submenu_id: null}
 
       }else if (data.body.toUpperCase() == 'AINDA NÃO ATENDIDO' || data.body.toUpperCase() == 'AINDA NAO ATENDIDO'){
-        // get submenu description
 
-        const subMenuData = await SubMenuModel.find(surveyData.submenu_id)
-        if (!subMenuData) return `error`
         // abrir a solicitacao no umovMe
-        const retOpenTaskUmovMe = await this.openTaskUmovMe(data, `no_finished`, subMenuData.description)
+        const retOpenTaskUmovMe = await this.openTaskUmovMe(data, `no_finished`, surveyData.submenu_id)
 
-        if (!retOpenTaskUmovMe) return `error`
+        if (!retOpenTaskUmovMe) return {cd_message: 'error', submenu_id: null}
 
         movementData.active = false
         movementData.save()
@@ -206,18 +199,26 @@ export default class SurveyController {
         surveyData.response_integration = retOpenTaskUmovMe.return
         surveyData.intention = 'request_not_finished'
         surveyData.save()
-        return 'request_not_finished'
+        return {cd_message: 'request_not_finished', submenu_id: null}
 
       }else{
         // se mandou outro texto, que nao seja dos botoes
-        return 'option_invalid'
+        return {cd_message: 'option_invalid', submenu_id: null}
       }
     }else if (data.cd_message == 'survey_experience'){
 
-      if (typeof +data.body == 'number'){
+      if (+data.body > 0){
 
-        if (+data.body > movementData.client.survey_min_experience){
+        if (+data.body < movementData.client.survey_min_experience){
           // abrir solicitacao
+          const retOpenTaskUmovMe = await this.openTaskUmovMe(data, `experience`, surveyData.submenu_id, +data.body)
+          if (!retOpenTaskUmovMe) {
+            Log.error(`Survey: error in send xml for min experience: ${data.body}, survey_id: ${surveyData.id}`)
+            return {cd_message: 'error', submenu_id: null}
+          }
+
+          surveyData.request_integration = retOpenTaskUmovMe.xml
+          surveyData.response_integration = retOpenTaskUmovMe.return
         }
 
         const newMovement = await new MovementsController().store({
@@ -238,32 +239,82 @@ export default class SurveyController {
 
         if (!newMovement) {
           Log.error(`Survey: Error in create new movement, experience: ${data.body}, survey_id: ${surveyData.id}`)
-          return `error`
+          return {cd_message: 'error', submenu_id: null}
         }
 
         surveyData.experience = data.body
         surveyData.save()
 
-        return 'survey_comments'
+        movementData.active = false
+        movementData.save()
+
+        return {cd_message: 'survey_comments', submenu_id: null}
+      }else{
+
+        movementData.active = false
+        movementData.save()
+
+        return {cd_message: 'survey_cancel', submenu_id: null}
       }
-      return `error`
+
+    }else if (data.cd_message == 'survey_comments'){
+      surveyData.comments = data.body
+      surveyData.save()
+
+      movementData.active = false
+      movementData.save()
+
+      return {cd_message: 'survey_end', submenu_id: null}
     }
 
     // case not status in survey
     Log.error(`Survey: status not found, data: ${JSON.stringify(data)}`)
-    return 'error'
+    return {cd_message: 'error', submenu_id: null}
   }
 
-  public async openTaskUmovMe(data: IMessage, type: 'no_finished' | 'experience', descriptionSubMenu?: string){
-    // abrir a solicitacao no umovMe
+  public async openTaskUmovMe(data: IMessage, type: 'no_finished' | 'experience', submenu_id: number, note?: number){
+
+    let alternativeIdentifier_team: any = ``
+    let observation: any = ``
+    let surveyActivity: any = ``
+    let surveyAccept : any = ``
+
+    const subMenuData = await SubMenuModel.find(submenu_id)
+    if (!subMenuData) return false
+
     const clientData = await ClientsModel.find(data.client_id)
     if (!clientData) return false
 
-    let alternativeIdentifier_team = type == `no_finished` ? clientData.survey_no_finished_team : clientData.survey_exp_team
-    let observation = type == `no_finished` ? clientData.survey_no_finished_service : clientData.survey_exp_service
-    let description = type == `no_finished` ? descriptionSubMenu : clientData.survey_exp_description
-    let surveyActivity = type == `no_finished` ? clientData.survey_no_finished_activity : clientData.survey_exp_activity
-    let surveyAccept = type == `no_finished` ? clientData.survey_no_finished_accept : clientData.survey_exp_accept
+    let description = type == `no_finished` ? `Tarefa não atendida: ${subMenuData.description}` : `Experiencia ruim, Nota: ${note} tarefa: ${subMenuData.description}`
+
+    if (type == `no_finished`){
+      if (clientData.active_config_menu_survey_no_finished){
+        alternativeIdentifier_team = subMenuData.team
+        observation = subMenuData.service
+        surveyActivity = subMenuData.activity
+        surveyAccept = subMenuData.accept
+      }else{
+        alternativeIdentifier_team = clientData.survey_no_finished_team
+        observation = clientData.survey_no_finished_service
+        surveyActivity = clientData.survey_no_finished_activity
+        surveyAccept = clientData.survey_no_finished_accept
+      }
+    }
+
+    if (type == `experience`){
+      if (clientData.active_config_menu_survey_experience){
+        alternativeIdentifier_team = subMenuData.team
+        observation = subMenuData.service
+        surveyActivity = subMenuData.activity
+        surveyAccept = subMenuData.accept
+      }else{
+        alternativeIdentifier_team = clientData.survey_exp_team
+        observation = clientData.survey_exp_service
+        surveyActivity = clientData.survey_exp_activity
+        surveyAccept = clientData.survey_exp_accept
+      }
+    }
+
     let activity: any = []
     activity.push({alternativeIdentifier: surveyActivity,})
     activity.push({alternativeIdentifier: surveyAccept,})

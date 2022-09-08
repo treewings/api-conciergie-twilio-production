@@ -104,6 +104,12 @@ export default class SubMenusController {
 
   }
 
+  public async showFromId (data: {submenu_id: number}) {
+
+    return await SubMenuModel.find(data.submenu_id)
+
+  }
+
   public async edit ({}: HttpContextContract) {
   }
 

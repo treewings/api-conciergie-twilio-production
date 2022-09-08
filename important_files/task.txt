@@ -1,7 +1,12 @@
 task
 
 01-09-2022 17:06
-a descrucao do submenu ja esta indo para o metodo de criar o xml,
+ok - a descrucao do submenu ja esta indo para o metodo de criar o xml,
 precisa olhar esse metodo e garantir que esta tudo ok
 implementar a config da coluna active_area_menu,
 inclusive criar outra coluna active para cada uma das situacoes: experience e not_finished
+
+
+02-09-2022 10:20
+surveyController, no metodo de fazer o xml, precisa ajustar para a configuracao
+o if ja foi iniciado , precisa terminar, adicionando as variaveis no local correto

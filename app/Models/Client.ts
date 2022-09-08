@@ -33,6 +33,12 @@ export default class Client extends BaseModel {
   public active_survey: boolean
 
   @column()
+  public active_config_menu_survey_experience: boolean
+
+  @column()
+  public active_config_menu_survey_no_finished: boolean
+
+  @column()
   public account_sid: string
 
   @column()

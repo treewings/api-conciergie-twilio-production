@@ -422,7 +422,8 @@ export default class MainController {
           return new TwilioResponse().send(objMessage)
         }
 
-        objMessage.cd_message = npsReturn
+        objMessage.cd_message = npsReturn.cd_message
+        objMessage.submenu_id = npsReturn.submenu_id
         return new TwilioResponse().send(objMessage)
       }
 
@@ -437,7 +438,22 @@ export default class MainController {
           return new TwilioResponse().send(objMessage)
         }
 
-        objMessage.cd_message = npsReturn
+        objMessage.cd_message = npsReturn.cd_message
+        return new TwilioResponse().send(objMessage)
+      }
+
+      if (checkNumber.status_movement.cd_status_movement === 'survey_comments') {
+        objMessage.main_movement = !checkNumber.main_movement ? checkNumber.id : checkNumber.main_movement
+        objMessage.nr_attendance = checkNumber.nr_attendance || '0'
+        objMessage.cd_message = 'survey_comments' // only, for parameter in controller of survey
+        const npsReturn = await new SurveyController().process(objMessage)
+
+        if (!npsReturn) {
+          objMessage.cd_message = 'error'
+          return new TwilioResponse().send(objMessage)
+        }
+
+        objMessage.cd_message = npsReturn.cd_message
         return new TwilioResponse().send(objMessage)
       }
 
