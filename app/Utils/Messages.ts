@@ -6,7 +6,7 @@ import MenuController from 'App/Controllers/Http/MenusController';
 import SubMenuController from 'App/Controllers/Http/SubMenusController';
 import SummaryController from 'App/Controllers/Http/SummariesController';
 import ClientsController from 'App/Controllers/Http/ClientsController';
-
+import LogAccessController from 'App/Controllers/Http/LogAccessesController'
 
 // interfaces
 import {IMessage} from 'App/Controllers/Interfaces/IMessages'
@@ -18,6 +18,17 @@ export default class Messages {
     async default(data: IMessage) {
 
       const retMessage = await MessageModel.findBy('cd_message', data.cd_message);
+
+      if (data.cd_message == `option_invalid`){
+        console.log(`number: ${JSON.stringify(data.number)}`)
+        const lastLog = await new LogAccessController().index({number: data.number || `0`})
+        if (lastLog){
+          if (retMessage)
+            if (retMessage.description != lastLog.send)
+              return `${retMessage.description} \n\n${lastLog.send}`
+        }
+
+      }
 
       if (data.cd_message == 'init' || data.cd_message == 'lobby_attendance_not_found'){
 

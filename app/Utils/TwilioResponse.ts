@@ -12,11 +12,13 @@ export default class TwilioResponse {
     const objTwiml = new twiml.MessagingResponse()
 
     // log das conversas
+    if (data.cd_message != `option_invalid`){
       await new LogAccess().store({
         number: data.from,
         received: data.body,
         send: retMessage.toString()
       })
+    }
     // fim log das conversas
 
     return objTwiml.message(retMessage).toString()

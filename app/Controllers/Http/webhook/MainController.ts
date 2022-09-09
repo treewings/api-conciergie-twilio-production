@@ -33,11 +33,11 @@ export default class MainController {
       cd_message: '',
       cd_setor: 0,
       menu_id: 0,
-	  menu_order: 0,
+	    menu_order: 0,
       type_attendance_id: 3,
       nr_attendance: '',
       main_movement: 0,
-      number: '',
+      number: From,
       body: Body,
       from: From,
     }
@@ -106,7 +106,7 @@ export default class MainController {
       const statusNrAttendanceApi = await new Api().mv({
         url: clientData.api_mv_url,
         token: clientData.api_mv_token,
-        nr_attendance: Body,
+        nr_attendance: ifNumberExists ? ifNumberExists.nr_attendance : Body,
         company_id: clientData.company_id
       })
 

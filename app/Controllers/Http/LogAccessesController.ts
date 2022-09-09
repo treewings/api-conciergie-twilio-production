@@ -4,7 +4,12 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import LogAccess from 'App/Models/LogAccess'
 
 export default class LogAccessesController {
-  public async index ({}: HttpContextContract) {
+  public async index (data: { number: string }) {
+    return await LogAccess
+    .query()
+    .where('number', data.number)
+    .orderBy(`id`, `desc`)
+    .first()
   }
 
   public async create ({}: HttpContextContract) {

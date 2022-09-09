@@ -29,8 +29,20 @@ export default class XmlsController {
       if (apiMv != null){
         //console.log('ok')
         let content = JSON.parse(dataRequest.content)
+        let alternativeIdentifier: string;
 
-        content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
+        switch (dataClient.alternative_identifier) {
+          case 'SETOR-LEITO': alternativeIdentifier = `${apiMv.CD_SETOR}-${apiMv.CD_LEITO}`
+          break;
+
+          case 'UNID-LEITO': alternativeIdentifier = `${apiMv.CD_UNID_INT}-${apiMv.CD_LEITO}`
+          break;
+
+          default: alternativeIdentifier = apiMv.CD_SETOR_LEITO
+          break;
+        }
+
+        content.schedule.serviceLocal.alternativeIdentifier = alternativeIdentifier
         content.schedule.customFields["pac.cd_paciente"] = apiMv.CD_PACIENTE
         content.schedule.customFields["pac.nm_paciente"] = apiMv.NM_PACIENTE
         content.schedule.customFields["pac.sn_vip"] = apiMv.SN_VIP
@@ -117,7 +129,7 @@ export default class XmlsController {
   }
 
   public async BuildXmlSurvey(data: {
-    content: any, api_mv_url: string, api_mv_token: string, nr_attendance: string, company_id: number
+    content: any, api_mv_url: string, api_mv_token: string, nr_attendance: string, company_id: number, alternativeIdentifier: string
   }){
 
     Log.info(`Build XML -> Data: ${JSON.stringify(data)}`)
@@ -132,8 +144,19 @@ export default class XmlsController {
         Log.info(`Build XML: Retorno api, ${JSON.stringify(apiMv)}`)
 
         if (apiMv != null){
+          let alternativeIdentifier: string;
+          switch (data.alternativeIdentifier) {
+            case 'SETOR-LEITO': alternativeIdentifier = `${apiMv.CD_SETOR}-${apiMv.CD_LEITO}`
+            break;
 
-          data.content.schedule.serviceLocal.alternativeIdentifier = apiMv.CD_SETOR_LEITO
+            case 'UNID-LEITO': alternativeIdentifier = `${apiMv.CD_UNID_INT}-${apiMv.CD_LEITO}`
+            break;
+
+            default: alternativeIdentifier = `${apiMv.CD_SETOR}-${apiMv.CD_LEITO}`
+            break;
+          }
+
+          data.content.schedule.serviceLocal.alternativeIdentifier = alternativeIdentifier
           data.content.schedule.customFields["pac.cd_paciente"] = apiMv.CD_PACIENTE
           data.content.schedule.customFields["pac.nm_paciente"] = apiMv.NM_PACIENTE
           data.content.schedule.customFields["pac.sn_vip"] = apiMv.SN_VIP

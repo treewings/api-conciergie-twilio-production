@@ -369,7 +369,8 @@ export default class SurveyController {
       api_mv_url: clientData.api_mv_url,
       company_id: clientData.company_id,
       content: contentJson,
-      nr_attendance: data.nr_attendance || '0'
+      nr_attendance: data.nr_attendance || '0',
+      alternativeIdentifier: clientData.alternative_identifier
     })
     if (!returnBuildXmlSurvey) {
       Log.error(`Build xml error, data: ${JSON.stringify({
@@ -377,7 +378,8 @@ export default class SurveyController {
         api_mv_url: clientData.api_mv_url,
         company_id: clientData.company_id,
         contentXML: contentJson,
-        nr_attendance: data.nr_attendance || '0'
+        nr_attendance: data.nr_attendance || '0',
+        alternativeIdentifier: clientData.alternative_identifier
       })}`)
       return false
     }

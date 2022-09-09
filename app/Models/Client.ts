@@ -30,6 +30,9 @@ export default class Client extends BaseModel {
   public active_send_request: boolean
 
   @column()
+  public alternative_identifier: string
+
+  @column()
   public active_survey: boolean
 
   @column()

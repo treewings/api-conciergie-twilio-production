@@ -34,20 +34,20 @@ export default class MovementsController {
     movement.main_movement      = (data.status_movement_code == 'lobby' && data.keep_main_movement == null || false) ? data.last_movement : data.main_movement
     movement.main_movement      = data.status_movement_code == 'waiting' ? null : movement.main_movement
 
-    if (data.status_movement_code == 'waiting'){
-      const verMovementsAnt = await MovementModel
-      .query()
-      .where('active', true)
-      .where('number', data.number)
-      .where('client_id', data.client_id)
-      .first();
+    // if (data.status_movement_code == 'waiting'){
+    //   const verMovementsAnt = await MovementModel
+    //   .query()
+    //   .where('active', true)
+    //   .where('number', data.number)
+    //   .where('client_id', data.client_id)
+    //   .first();
 
-      if (verMovementsAnt){
-        verMovementsAnt.active = false
-        verMovementsAnt.save();
-      }
+    //   if (verMovementsAnt){
+    //     verMovementsAnt.active = false
+    //     verMovementsAnt.save();
+    //   }
 
-    }
+    // }
 
     if (data.status_movement_code == 'menu' && !data.more_service){
 
