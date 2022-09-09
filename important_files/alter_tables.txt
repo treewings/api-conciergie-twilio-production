@@ -1,19 +1,79 @@
 ALTER TABLE `concierge_prd`.`clients`
-ADD COLUMN `survey_activity` VARCHAR(80) NULL AFTER `updated_at`,
-ADD COLUMN `survey_service` VARCHAR(80) NULL AFTER `survey_activity`,
-ADD COLUMN `survey_team` VARCHAR(80) NULL AFTER `survey_service`,
-ADD COLUMN `survey_accept` VARCHAR(80) NULL AFTER `survey_team`,
-ADD COLUMN `survey_group` VARCHAR(80) NULL AFTER `survey_accept`;
+ADD COLUMN `survey_exp_activity` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_exp_service` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_exp_team` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_exp_accept` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_exp_group` VARCHAR(80) NULL AFTER `updated_at`;
+ADD COLUMN `survey_exp_description` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_min_experience` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `active_config_menu_survey_no_finished` TINYINT(1) 0 AFTER `updated_at`,
+ADD COLUMN `survey_no_finished_activity` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_no_finished_service` VARCHAR(80) NULL AFTER `updated_at`;
+ADD COLUMN `survey_no_finished_team` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_no_finished_accept` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `survey_no_finished_group` VARCHAR(80) NULL AFTER `updated_at`,
+ADD COLUMN `active_survey` TINYINT(1) 0 AFTER `updated_at`,
+ADD COLUMN `active_config_menu_survey_experience` TINYINT(1) 0 AFTER `updated_at`;
+ADD COLUMN `alternative_identifier` VARCHAR(45) NULL AFTER `updated_at`;
 
 --------------------------------------------------------------------------------
 
 ALTER TABLE `concierge_prd`.`movements`
-ADD COLUMN `survey_id` INT(10) NULL AFTER `updated_at`,
+ADD COLUMN `survey_id` INT(10) NULL AFTER `updated_at`
 
 --------------------------------------------------------------------------------
 
+insert into concierge_prd.messages (cd_message, description) values
+('survey_experience', 'Considerando a sua experiência com o serviço solicitado: * parService *, em uma escala de 0 a 10, onde 0 é muito ruim e 10 é muito boa, que pontuação você daria?\n\nA qualquer momento digite sair para voltar ao menu principal e fazer uma nova solicitação.');
+insert into concierge_prd.messages (cd_message, description) values
+('survey_comments','Obrigada por nos avaliar! Caso queira deixar um comentário, por favor, envie em uma única mensagem ou digite 0 para finalizar.');
+insert into concierge_prd.messages (cd_message, description) values
+('survey_end','Obrigada por utilizar nossos serviços. Caso queira realizar uma nova solicitação é so nos chamar novamente.');
+insert into concierge_prd.messages (cd_message, description) values
+('survey_cancel','Obrigada por utilizar nossos serviços. Caso queira realizar uma nova solicitação é so nos chamar novamente.');
+insert into concierge_prd.messages (cd_message, description) values
+('request_not_finished', 'Lamentamos o ocorrido. Entraremos em contato para verificarmos o que houve com seu pedido. Caso queira realizar uma nova solicitação é so nos chamar novamente.');
+--------------------------------------------------------------------------------
 
-insert into concierge_prd.messages
-(cd_message, description)
-values
-('survey_experience', 'Considerando a sua experiência com o serviço solicitado: * parService *, em uma escala de 0 a 10, onde 0 é muito ruim e 10 é muito boa, que pontuação você daria?');
+insert into concierge_prd.status_movements (cd_status_movement, description) values
+('survey_init','inicio da pesquisa de satisfacao');
+insert into concierge_prd.status_movements (cd_status_movement, description) values
+('survey_cancel','cancelamento da pesquisa ou nao quiz responder');
+insert into concierge_prd.status_movements (cd_status_movement, description) values
+('survey_experience','Esperando a avaliacao entre 0 e 10 do usuario');
+insert into concierge_prd.status_movements (cd_status_movement, description) values
+('survey_comments','Esperando usuario comentar ');
+
+--------------------------------------------------------------------------------
+
+CREATE TABLE `concierge_prd`.`surveys` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `request_outs_id` INT(11) UNSIGNED NOT NULL,
+  `intention` VARCHAR(45) NULL DEFAULT NULL,
+  `experience` INT(11) NULL DEFAULT NULL,
+  `comments` LONGTEXT NULL DEFAULT NULL,
+  `request_integration` LONGTEXT NULL DEFAULT NULL,
+  `response_integration` VARCHAR(45) NULL DEFAULT NULL,
+  `contact_at` TIMESTAMP NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+  `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  `movement_id` INT(11) UNSIGNED NULL DEFAULT NULL,
+  `submenu_id` INT(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+ALTER TABLE `concierge_prd`.`surveys`
+ADD INDEX `request_outs_id_foreign` (`request_outs_id` ASC),
+ADD INDEX `movement_id_foreing` (`movement_id` ASC);
+;
+
+ALTER TABLE `concierge_prd`.`surveys`
+ADD CONSTRAINT `movement_id_foreing`
+  FOREIGN KEY (`movement_id`)
+  REFERENCES `concierge_prd`.`movements` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+
