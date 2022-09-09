@@ -25,7 +25,7 @@ export default class SurveyController {
       const surveyData = await SurveyModel.query()
       .whereNull('contact_at')
       .preload('request_outs')
-      .orderBy('updated_at', 'desc') // orderBy, for balance in contacts
+      .orderBy('updated_at') // orderBy, for balance in contacts
       .first();
       if (!surveyData) return false
 
