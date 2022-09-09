@@ -36,7 +36,7 @@ export default class AppProvider {
 
     // #region cron send survey
     const SurveyController = (await import('App/Controllers/Http/SurveyController')).default
-    cron.schedule("*/10 * * * * *", async () => {
+    cron.schedule("* 1 * * *", async () => {
       await new SurveyController().index()
     });
   // #endregion cron send survey
