@@ -22,8 +22,8 @@ export default class umovMe {
       return;
     })
 
-    // return returnXML == 50 ? true : false;
-    return returnXML == 50 ? false : true;
+    return returnXML == 50 ? true : false;
+    //return returnXML == 50 ? false : true;
   }
 
 }
