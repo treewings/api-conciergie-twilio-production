@@ -28,7 +28,7 @@ export default class SurveyController {
       .orderBy('updated_at') // orderBy, for balance in contacts
       .first();
       if (!surveyData) return false
-
+      Log.info(`init survey data: ${surveyData.id} found`)
       // get client data
       const clientData = await MovementsModel.query()
       .where('main_movement', surveyData.request_outs.movement_id)
