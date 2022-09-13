@@ -35,7 +35,7 @@ export default class SurveyController {
       .where('status_movement_id', 9)
       .preload('client').first();
       if (!clientData) return false
-
+      Log.info(`init survey client data: ${clientData.client_id} found`)
       // if the task has been completed
       const retUmov = await new UmovMeUtil().searchTaskWithStatusEnd({
         url_base: clientData.client.endpoint_request,

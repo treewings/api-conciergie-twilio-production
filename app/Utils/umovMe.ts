@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import { parseString } from 'xml2js'
+import Log from 'App/Utils/logs'
 export default class umovMe {
   // consults tasks with status: end
   async searchTaskWithStatusEnd(data: { taskId: string, url_base: string }) {
@@ -22,6 +23,7 @@ export default class umovMe {
       return;
     })
 
+    Log.info(`init survey return xml task end: ${returnXML}`)
     return returnXML == 50 ? true : false;
     //return returnXML == 50 ? false : true;
   }
