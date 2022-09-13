@@ -1,5 +1,4 @@
 import Day from 'dayjs'
-
 //Controllers
 import MovementsController from './MovementsController'
 import XmlController from 'App/Controllers/Http/XmlsController'
@@ -15,6 +14,7 @@ import UmovMeUtil from 'App/Utils/umovMe'
 import ApiService from 'App/Services/Api'
 import TwilioResponse from 'App/Utils/TwilioResponse'
 import Log from 'App/Utils/logs'
+import {DateTime} from 'luxon'
 
 //interfaces
 import { IMessage } from 'App/Controllers/Interfaces/IMessages'
@@ -42,7 +42,11 @@ export default class SurveyController {
         taskId: surveyData.request_outs.return_content
       })
 
-      if (!retUmov) return false
+      if (!retUmov) { // caso nao esteja finalizado, atualiza o updated_at, para colocar para o fim da fila
+        surveyData.updatedAt = DateTime.local()
+        surveyData.save()
+        return false
+      }
       const movementData =
         await MovementsModel.query()
         .where('number', surveyData.request_outs.number)
