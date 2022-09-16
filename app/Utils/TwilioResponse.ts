@@ -1,6 +1,6 @@
 import twilio, { twiml } from "twilio"
 import Message from 'App/Utils/Messages'
-
+import Log from 'App/Utils/logs'
 import {IMessage, ICreateMessage} from 'App/Controllers/Interfaces/IMessages'
 import LogAccess from 'App/Controllers/Http/LogAccessesController'
 
@@ -29,7 +29,7 @@ export default class TwilioResponse {
     const authToken = data.authToken;
     const clientTwilio = twilio(accountSid, authToken);
     try {
-
+      Log.info(`send message from twilio, From: ${data.from}, To: ${data.to}`)
       await clientTwilio.messages.create({
         body: data.message,
         from: `whatsapp:${data.from}`,

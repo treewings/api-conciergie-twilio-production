@@ -8,6 +8,7 @@ import SubMenuModel from 'App/Models/SubMenu'
 import ClientsModel from 'App/Models/Client'
 import SurveyModel from 'App/Models/Survey'
 import MovementsModel from 'App/Models/Movement'
+import MessageModel from 'App/Models/Message'
 
 //utils
 import UmovMeUtil from 'App/Utils/umovMe'
@@ -274,6 +275,49 @@ export default class SurveyController {
     // case not status in survey
     Log.error(`Survey: status not found, data: ${JSON.stringify(data)}`)
     return {cd_message: 'error', submenu_id: null}
+  }
+
+  public async expiration (){
+    const movementSurvey = await MovementsModel.query()
+    .whereNotNull('survey_id')
+    .whereIn('status_movement_id', [10,11,12,13]) // this ids, referency of survey status
+    .where('active', true)
+    .preload('survey')
+    .preload('client')
+    if (!movementSurvey) return false
+
+    const message = await MessageModel.findBy('cd_message', 'survey_end')
+    if (!message) return false
+
+    for (let iMovSurvey = 0; iMovSurvey < movementSurvey.length; iMovSurvey++) {
+      const surveyData = await SurveyModel.find(movementSurvey[iMovSurvey].survey_id)
+      if (surveyData){
+        console.log(Day(movementSurvey[iMovSurvey].createdAt.toString()).format('HH:mm'))
+        console.log(Day().add(-5, 'minutes').format('HH:mm'))
+
+        if (Day(movementSurvey[iMovSurvey].createdAt.toString()).format('HH:mm') < Day().add(-10, 'minutes').format('HH:mm')){
+          // desative movements of surveys and update survey with expired intention
+          movementSurvey[iMovSurvey].active = false
+          surveyData.intention = 'expired'
+          await movementSurvey[iMovSurvey].save()
+          await surveyData.save()
+
+          // send message
+          await new TwilioResponse().create({
+            accountSid: movementSurvey[iMovSurvey].client.account_sid,
+            authToken: movementSurvey[iMovSurvey].client.auth_token,
+            from: movementSurvey[iMovSurvey].client.phone_number,
+            to: movementSurvey[iMovSurvey].number,
+            message: message.description
+          })
+        }
+      }
+    }
+
+
+    return true
+
+
   }
 
   public async openTaskUmovMe(data: IMessage, type: 'no_finished' | 'experience', submenu_id: number, note?: number){

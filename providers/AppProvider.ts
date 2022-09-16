@@ -1,6 +1,6 @@
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import cron from 'node-cron'
-import Moment from 'moment'
+// import Moment from 'moment'
 
 export default class AppProvider {
   constructor (protected app: ApplicationContract) {
@@ -37,10 +37,18 @@ export default class AppProvider {
     // #region cron send survey
     const SurveyController = (await import('App/Controllers/Http/SurveyController')).default
     cron.schedule("*/1 * * * *", async () => {
-      console.log(`[${Moment().format('H:mm')}] - Init survey contact...`)
+      // console.log(`[${Moment().format('H:mm')}] - Init survey contact...`)
       await new SurveyController().index()
     });
   // #endregion cron send survey
+
+    // #region cron survey expired
+      cron.schedule("*/30 * * * * *", async () => {
+        // console.log(`[${Moment().format('H:mm')}] - Init survey expires...`)
+        await new SurveyController().expiration()
+      });
+    // #endregion cron send survey
+
   }
 
   public async shutdown () {
