@@ -5,6 +5,8 @@ import RequestOutController from 'App/Controllers/Http/RequestOutsController'
 import ClientsController from 'App/Controllers/Http/ClientsController'
 import Api from 'App/Services/Api'
 import Log from 'App/Utils/logs'
+import Database from '@ioc:Adonis/Lucid/Database'
+import ApiService from 'App/Services/Api'
 
 export default class XmlsController {
   public async BuildXmlSingleRequest(){
@@ -235,6 +237,55 @@ export default class XmlsController {
     }
 
     return false
+  }
+
+  public async BuildXmlSurveyCustom(data: { survey_id: number, url: string}){
+
+    const dataViewSurvey: {
+      status_resposta: string,
+      nota: string,
+      comentario: string,
+      tarefa_pesquisa: string,
+      dt_contato_pesquisa: string,
+      dt_final_pesquisa: string,
+      tarefa_servico_solicitado: string,
+      servico_solicitado: string,
+      dt_solicitacao: string,
+    } =
+      await Database.from('view_surveys').select('*').where('id', data.survey_id).first()
+
+    let contentJsonItens = {
+      customEntityEntry: {
+        description: data.survey_id,
+        alternativeIdentifier: `${data.survey_id}-${dataViewSurvey.tarefa_servico_solicitado}`,
+        customFields: {
+          status_resposta: dataViewSurvey.status_resposta,
+          nota: dataViewSurvey.nota,
+          comentario: dataViewSurvey.comentario,
+          tarefa_pesquisa: dataViewSurvey.tarefa_pesquisa,
+          dt_contato_pesquisa: dataViewSurvey.dt_contato_pesquisa,
+          dt_final_pesquisa: dataViewSurvey.dt_final_pesquisa,
+          tarefa_servico_solicitado: dataViewSurvey.tarefa_servico_solicitado,
+          servico_solicitado: dataViewSurvey.servico_solicitado,
+          dt_solicitacao: dataViewSurvey.dt_solicitacao,
+        }
+      }
+    }
+
+    const builder = new xml2js.Builder()
+    const xml = builder.buildObject(contentJsonItens)
+
+    const rSendXml = await new ApiService().sendXmlTo3Wings({
+      url: data.url,
+      xml
+    })
+    if (!rSendXml) {
+      Log.error(`Send xml survey end error, url: ${data.url}, xml: ${xml}`)
+      return false
+    }
+
+    return true
+
   }
 
   public async jsonToXml(content: string){

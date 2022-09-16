@@ -45,7 +45,7 @@ export default class SurveyController {
 
       if (!retUmov) { // caso nao esteja finalizado, atualiza o updated_at, para colocar para o fim da fila
         surveyData.updatedAt = DateTime.local()
-        surveyData.save()
+        await surveyData.save()
         return false
       }
       const movementData =
@@ -89,7 +89,7 @@ export default class SurveyController {
       if (!returnMovementCreated) return false
       surveyData.contact_at = Day().format()
       surveyData.movement_id = returnMovementCreated.id
-      surveyData.save()
+      await surveyData.save()
 
 
       // Get submenu infos
@@ -139,19 +139,27 @@ export default class SurveyController {
       data.body.toUpperCase() == '0'
       ){
         movementData.active = false
-        movementData.save()
+        await movementData.save()
 
         surveyData.intention = 'stop'
-        surveyData.save()
+        await surveyData.save()
 
         Log.info(`Survey: ${surveyData.id} -> Intention: stop`)
+
+        //start send xml for table nps in umovMe
+        await new XmlController().BuildXmlSurveyCustom({
+          survey_id: surveyData.id,
+          url: movementData.client.endpoint_request_itens.replace('cad_concierge_item', 'nps') // change for custom nps table
+        })
+        //end send xml for table nps in umovMe
+
         return {cd_message: 'survey_cancel', submenu_id: null}
     }
 
     if (data.cd_message == 'survey_init'){
       if (data.body.toUpperCase() == 'SIM'){
         movementData.active = false
-        movementData.save()
+        await movementData.save()
 
         const newMovement = await new MovementsController().store({
           number: movementData.number,
@@ -182,12 +190,20 @@ export default class SurveyController {
       }else if (data.body.toUpperCase() == 'NÃO' || data.body.toUpperCase() == 'NAO'){
 
         movementData.active = false
-        movementData.save()
+        await movementData.save()
 
         surveyData.intention = 'negative'
-        surveyData.save()
+        await surveyData.save()
 
         Log.info(`Survey: ${surveyData.id} -> Intention: negative`)
+
+        //start send xml for table nps in umovMe
+        await new XmlController().BuildXmlSurveyCustom({
+          survey_id: surveyData.id,
+          url: movementData.client.endpoint_request_itens.replace('cad_concierge_item', 'nps') // change for custom nps table
+        })
+        //end send xml for table nps in umovMe
+
         return {cd_message: 'survey_cancel', submenu_id: null}
 
       }else if (data.body.toUpperCase() == 'AINDA NÃO ATENDIDO' || data.body.toUpperCase() == 'AINDA NAO ATENDIDO'){
@@ -198,12 +214,20 @@ export default class SurveyController {
         if (!retOpenTaskUmovMe) return {cd_message: 'error', submenu_id: null}
 
         movementData.active = false
-        movementData.save()
+        await movementData.save()
 
         surveyData.request_integration = retOpenTaskUmovMe.xml
         surveyData.response_integration = retOpenTaskUmovMe.return
         surveyData.intention = 'request_not_finished'
-        surveyData.save()
+        await surveyData.save()
+
+        //start send xml for table nps in umovMe
+        await new XmlController().BuildXmlSurveyCustom({
+          survey_id: surveyData.id,
+          url: movementData.client.endpoint_request_itens.replace('cad_concierge_item', 'nps') // change for custom nps table
+        })
+        //end send xml for table nps in umovMe
+
         return {cd_message: 'request_not_finished', submenu_id: null}
 
       }else{
@@ -248,26 +272,33 @@ export default class SurveyController {
         }
 
         surveyData.experience = data.body
-        surveyData.save()
+        await surveyData.save()
 
         movementData.active = false
-        movementData.save()
+        await movementData.save()
 
         return {cd_message: 'survey_comments', submenu_id: null}
       }else{
 
         movementData.active = false
-        movementData.save()
+        await movementData.save()
 
         return {cd_message: 'survey_cancel', submenu_id: null}
       }
 
     }else if (data.cd_message == 'survey_comments'){
       surveyData.comments = data.body
-      surveyData.save()
+      await surveyData.save()
 
       movementData.active = false
-      movementData.save()
+      await movementData.save()
+
+      //start send xml for table nps in umovMe
+      await new XmlController().BuildXmlSurveyCustom({
+        survey_id: surveyData.id,
+        url: movementData.client.endpoint_request_itens.replace('cad_concierge_item', 'nps') // change for custom nps table
+      })
+      //end send xml for table nps in umovMe
 
       return {cd_message: 'survey_end', submenu_id: null}
     }
@@ -301,6 +332,13 @@ export default class SurveyController {
           surveyData.intention = 'expired'
           await movementSurvey[iMovSurvey].save()
           await surveyData.save()
+
+          //start send xml for table nps in umovMe
+          await new XmlController().BuildXmlSurveyCustom({
+            survey_id: surveyData.id,
+            url: movementSurvey[iMovSurvey].client.endpoint_request_itens.replace('cad_concierge_item', 'nps') // change for custom nps table
+          })
+          //end send xml for table nps in umovMe
 
           // send message
           await new TwilioResponse().create({
