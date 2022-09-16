@@ -323,10 +323,8 @@ export default class SurveyController {
     for (let iMovSurvey = 0; iMovSurvey < movementSurvey.length; iMovSurvey++) {
       const surveyData = await SurveyModel.find(movementSurvey[iMovSurvey].survey_id)
       if (surveyData){
-        console.log(Day(movementSurvey[iMovSurvey].createdAt.toString()).format('HH:mm'))
-        console.log(Day().add(-5, 'minutes').format('HH:mm'))
-
-        if (Day(movementSurvey[iMovSurvey].createdAt.toString()).format('HH:mm') < Day().add(-10, 'minutes').format('HH:mm')){
+        const expirationTime = +movementSurvey[iMovSurvey].client.survey_expiration_time || 10
+        if (Day(movementSurvey[iMovSurvey].createdAt.toString()).format('HH:mm') < Day().add(-expirationTime, 'minutes').format('HH:mm')){
           // desative movements of surveys and update survey with expired intention
           movementSurvey[iMovSurvey].active = false
           surveyData.intention = 'expired'
@@ -334,6 +332,7 @@ export default class SurveyController {
           await surveyData.save()
 
           //start send xml for table nps in umovMe
+          Log.info(`Send custom xml, init`)
           await new XmlController().BuildXmlSurveyCustom({
             survey_id: surveyData.id,
             url: movementSurvey[iMovSurvey].client.endpoint_request_itens.replace('cad_concierge_item', 'nps') // change for custom nps table

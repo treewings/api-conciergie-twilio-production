@@ -1,5 +1,6 @@
 //import { IXmlSingleRequest } from 'App/Controllers/Interfaces/IXml'
 import Moment from 'moment';
+import Day from 'dayjs'
 import xml2js from 'xml2js'
 import RequestOutController from 'App/Controllers/Http/RequestOutsController'
 import ClientsController from 'App/Controllers/Http/ClientsController'
@@ -241,50 +242,57 @@ export default class XmlsController {
 
   public async BuildXmlSurveyCustom(data: { survey_id: number, url: string}){
 
-    const dataViewSurvey: {
-      status_resposta: string,
-      nota: string,
-      comentario: string,
-      tarefa_pesquisa: string,
-      dt_contato_pesquisa: string,
-      dt_final_pesquisa: string,
-      tarefa_servico_solicitado: string,
-      servico_solicitado: string,
-      dt_solicitacao: string,
-    } =
-      await Database.from('view_surveys').select('*').where('id', data.survey_id).first()
+    try {
+      const dataViewSurvey: {
+        status_resposta: string,
+        nota: string,
+        comentario: string,
+        tarefa_pesquisa: string,
+        dt_contato_pesquisa: string,
+        dt_final_pesquisa: string,
+        tarefa_servico_solicitado: string,
+        servico_solicitado: string,
+        dt_solicitacao: string,
+      } =
+        await Database.from('view_surveys').select('*').where('id', data.survey_id).first()
 
-    let contentJsonItens = {
-      customEntityEntry: {
-        description: data.survey_id,
-        alternativeIdentifier: `${data.survey_id}-${dataViewSurvey.tarefa_servico_solicitado}`,
-        customFields: {
-          status_resposta: dataViewSurvey.status_resposta,
-          nota: dataViewSurvey.nota,
-          comentario: dataViewSurvey.comentario,
-          tarefa_pesquisa: dataViewSurvey.tarefa_pesquisa,
-          dt_contato_pesquisa: dataViewSurvey.dt_contato_pesquisa,
-          dt_final_pesquisa: dataViewSurvey.dt_final_pesquisa,
-          tarefa_servico_solicitado: dataViewSurvey.tarefa_servico_solicitado,
-          servico_solicitado: dataViewSurvey.servico_solicitado,
-          dt_solicitacao: dataViewSurvey.dt_solicitacao,
+      let contentJsonItens = {
+        customEntityEntry: {
+          description: data.survey_id,
+          alternativeIdentifier: `${data.survey_id}-${dataViewSurvey.tarefa_servico_solicitado}`,
+          customFields: {
+            status_resposta: dataViewSurvey.status_resposta,
+            nota: dataViewSurvey.nota,
+            comentario: dataViewSurvey.comentario,
+            tarefa_pesquisa: dataViewSurvey.tarefa_pesquisa,
+            dt_contato_pesquisa: Day(dataViewSurvey.dt_contato_pesquisa).format('DD/MM/YYYY HH:mm:ss'),
+            dt_final_pesquisa: Day(dataViewSurvey.dt_final_pesquisa).format('DD/MM/YYYY HH:mm:ss'),
+            tarefa_servico_solicitado: dataViewSurvey.tarefa_servico_solicitado,
+            servico_solicitado: dataViewSurvey.servico_solicitado,
+            dt_solicitacao: Day(dataViewSurvey.dt_solicitacao).format('DD/MM/YYYY HH:mm:ss'),
+          }
         }
       }
+
+      Log.info(`xml custom, contentJsonItens: ${JSON.stringify(contentJsonItens)}`)
+
+      const builder = new xml2js.Builder()
+      const xml = builder.buildObject(contentJsonItens)
+      Log.info(`xml custom, survey: ${xml}, url: ${data.url}`)
+
+      const rSendXml = await new ApiService().sendXmlTo3Wings({
+        url: data.url,
+        xml
+      })
+      if (!rSendXml) {
+        Log.error(`Send xml survey end error, url: ${data.url}, xml: ${xml}`)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      Log.error(`Send xml survey end error, error: ${error}`)
     }
-
-    const builder = new xml2js.Builder()
-    const xml = builder.buildObject(contentJsonItens)
-
-    const rSendXml = await new ApiService().sendXmlTo3Wings({
-      url: data.url,
-      xml
-    })
-    if (!rSendXml) {
-      Log.error(`Send xml survey end error, url: ${data.url}, xml: ${xml}`)
-      return false
-    }
-
-    return true
 
   }
 

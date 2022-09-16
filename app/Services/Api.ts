@@ -171,11 +171,12 @@ export default class Api {
       const ret = await Axios.request(options)
         .then(function (response: any) {
           let arr = fastXmlParser.parse(response.data)
-
+          Log.info(`sendXmlTo3wings: ${JSON.stringify(arr)}`)
           return arr != null ? arr.result.resourceId : false
         })
         .catch(function (error) { //error
           //console.error(error.response)
+          Log.error(`sendXmlTo3wings: ${error.toString()}`)
           return error.toString()
         });
 

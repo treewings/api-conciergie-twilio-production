@@ -1,0 +1,1 @@
+{"level":"error","message":"Send xml survey end error, error: Error: select * from `view_surveys` where `id` = 6 limit 1 - ER_NO_SUCH_TABLE: Table 'concierge_prd.view_surveys' doesn't exist","timestamp":"16/09/2022 11:10:30"}

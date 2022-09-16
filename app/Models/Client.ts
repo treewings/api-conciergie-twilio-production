@@ -27,6 +27,9 @@ export default class Client extends BaseModel {
   public active: boolean
 
   @column()
+  public survey_expiration_time: string
+
+  @column()
   public active_send_request: boolean
 
   @column()
