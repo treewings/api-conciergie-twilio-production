@@ -324,7 +324,10 @@ export default class SurveyController {
       const surveyData = await SurveyModel.find(movementSurvey[iMovSurvey].survey_id)
       if (surveyData){
         const expirationTime = +movementSurvey[iMovSurvey].client.survey_expiration_time || 10
-        if (Day(movementSurvey[iMovSurvey].createdAt.toString()).format('HH:mm') < Day().add(-expirationTime, 'minutes').format('HH:mm')){
+        const movementDate = Day(movementSurvey[iMovSurvey].createdAt.toString())
+        const nowDateWithAddMinutes = Day()
+        const diffDates = nowDateWithAddMinutes.diff(movementDate) / 60000 // for obtain minutes
+        if (diffDates > expirationTime){
           // desative movements of surveys and update survey with expired intention
           movementSurvey[iMovSurvey].active = false
           surveyData.intention = 'expired'
