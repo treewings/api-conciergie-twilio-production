@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import MenuModel from 'App/Models/Menu'
+import SubMenuModel from 'App/Models/SubMenu'
 
 import { IMainMenu } from 'App/Controllers/Interfaces/IOptions'
 
@@ -64,7 +65,7 @@ export default class MenusController {
     .where('order', data.menu_id || 0)
     .first()
   }
-  
+
   public async edit ({}: HttpContextContract) {
   }
 
@@ -72,5 +73,78 @@ export default class MenusController {
   }
 
   public async destroy ({}: HttpContextContract) {
+  }
+
+  public async repeatMenusSector () {
+    // const setores = [
+    //   74,101,109,226,227,228,229,230,231,232,233,234,236,237,238,239,
+    //   241,242,243,244,246,247,248,250,251,255,271,272,274,279,286,287,
+    //   300,1018,1034,1119
+    // ]
+
+    const setores = [
+      74,101
+    ]
+
+    for (let index = 0; index < setores.length; index++) {
+      const data: any = {
+        client_id: 3,
+        sector_id: 252,
+        new_sector: setores[index]
+      }
+
+      await this.replicMenusFromSector(data)
+
+    }
+
+  }
+
+  public async replicMenusFromSector (data: { client_id: number, sector_id: number, new_sector: number }){
+
+    const menuData = await MenuModel.query()
+    .where('client_id', data.client_id).where('setor', data.sector_id)
+    if (!menuData) return
+
+    for (let iMenu = 0; iMenu < menuData.length; iMenu++) {
+      const menus = new MenuModel()
+      menus.description = menuData[iMenu].description
+      menus.order = menuData[iMenu].order
+      menus.type = menuData[iMenu].type
+      menus.icon = menuData[iMenu].icon
+      menus.active_type_attendance = menuData[iMenu].active_type_attendance
+      menus.setor = data.new_sector
+      menus.message = menuData[iMenu].message
+      menus.client_id = data.client_id
+      await menus.save()
+      console.log(`menu cadastrado: ${menus.id}`)
+
+      if (menus.$isPersisted){
+        const subMenuData = await SubMenuModel.query().where('menu_id', menuData[iMenu].id)
+        for (let iSubMenu = 0; iSubMenu < subMenuData.length; iSubMenu++) {
+          const subMenus = new SubMenuModel()
+          subMenus.menu_id = menus.id
+          subMenus.description = subMenuData[iSubMenu].description
+          subMenus.order = subMenuData[iSubMenu].order
+          subMenus.time_attendance = subMenuData[iSubMenu].time_attendance
+          subMenus.type_attendance_id = subMenuData[iSubMenu].type_attendance_id
+          subMenus.active_quantity = subMenuData[iSubMenu].active_quantity
+          subMenus.min_quantity = subMenuData[iSubMenu].min_quantity
+          subMenus.max_quantity = subMenuData[iSubMenu].max_quantity
+          subMenus.group = subMenuData[iSubMenu].group
+          subMenus.activity = subMenuData[iSubMenu].activity
+          subMenus.accept = subMenuData[iSubMenu].accept
+          subMenus.team = subMenuData[iSubMenu].team
+          subMenus.service = subMenuData[iSubMenu].service
+          await subMenus.save()
+          console.log(`submenu cadastrado: ${subMenus.id}`)
+        }
+
+      }
+
+
+    }
+
+
+
   }
 }
