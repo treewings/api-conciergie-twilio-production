@@ -88,7 +88,7 @@ export default class MenusController {
 
     for (let index = 0; index < setores.length; index++) {
       const data: any = {
-        client_id: 3,
+        client_id: 4,
         sector_id: 252,
         new_sector: setores[index]
       }
