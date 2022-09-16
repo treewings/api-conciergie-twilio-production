@@ -42,6 +42,10 @@ export default class Api {
             telefone
           } = response.data.message.Body.paciente
 
+          if (!cd_convenio || !nm_convenio || !cd_paciente || !nm_paciente || !dt_nascimento || !telefone || !cd_setor || !cd_unid_int || !cd_leito){
+            return null
+          }
+
           let dataTranslate = {
             CD_SETOR_LEITO: `${cd_setor}-${cd_leito}`,
             SN_VIP: sn_vip,
@@ -114,6 +118,10 @@ export default class Api {
             dt_nascimento,
             telefone
           } = response.data.message.Body.paciente
+
+          if (!cd_convenio || !nm_convenio || !cd_paciente || !nm_paciente || !dt_nascimento || !telefone || !cd_setor || !cd_unid_int || !cd_leito){
+            return null
+          }
 
           let dataTranslate = {
             CD_SETOR_LEITO: `${cd_setor}-${cd_leito}`,
