@@ -155,10 +155,12 @@ export default class MovementsController {
     .where('client_id', data.client_id)
     .whereNot('status_movement_id', 1)
     .whereNotNull('nr_attendance')
+    .max('nr_attendance')
+    .first()
 
-    if (!ret[0]) return false
+    if (!ret) return false
 
-    return ret[0];
+    return ret;
   }
 
   public async show (data: IMovementShow) {
