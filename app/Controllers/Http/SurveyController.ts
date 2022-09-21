@@ -111,7 +111,7 @@ export default class SurveyController {
       return true;
 
     } catch (error) {
-      console.log(error)
+      Log.error(JSON.stringify(error))
     }
 
 

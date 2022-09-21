@@ -160,6 +160,7 @@ export default class MovementsController {
 
     if (!ret) return false
 
+    console.log(`ret.nr_attendance: ${ret.nr_attendance}`)
     return ret;
   }
 
