@@ -51,7 +51,8 @@ export default class MainController {
     //#endregion informacoes do cliente
 
     //#region verificando se o number ja falou antes
-      const ifNumberExists = await new MovementsController().showIfExists({ number: From, client_id })
+       const ifNumberExists = await new MovementsController().showIfExists({ number: From, client_id })
+
       if (ifNumberExists) {
         // await new MovementsController().store({
         //   number: From,
@@ -78,6 +79,7 @@ export default class MainController {
           saveIdIfNumberExists = saveIfNumberExists.id
         }
       }
+
     //#endregion verificando se o number ja falou antes
 
 

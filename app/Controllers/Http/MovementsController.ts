@@ -137,6 +137,17 @@ export default class MovementsController {
 
   public async showIfExists (data: {number: string, client_id: number}) {
     //console.log(`data: ${JSON.stringify(data)}`)
+
+    const ret1 = await MovementModel
+    .query()
+    //.where('nr_attendance', data.nr_attendance)
+    .where('number', data.number)
+    .where('client_id', data.client_id)
+    .where('active', true)
+    .first()
+
+    if (ret1) return false
+
     const ret = await MovementModel
     .query()
     //.where('nr_attendance', data.nr_attendance)
@@ -147,9 +158,7 @@ export default class MovementsController {
 
     if (!ret[0]) return false
 
-    if (ret.find(e => e.active == true)) return false
-
-    return ret === null ? false : ret[0];
+    return ret[0];
   }
 
   public async show (data: IMovementShow) {
