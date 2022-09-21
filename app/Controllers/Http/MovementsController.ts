@@ -136,12 +136,13 @@ export default class MovementsController {
   }
 
   public async showIfExists (data: {number: string, client_id: number}) {
-    console.log(`data: ${JSON.stringify(data)}`)
+    //console.log(`data: ${JSON.stringify(data)}`)
     const ret = await MovementModel
     .query()
     //.where('nr_attendance', data.nr_attendance)
     .where('number', data.number)
     .where('client_id', data.client_id)
+    .whereNot('status_movement_id', 1)
     .whereNotNull('nr_attendance')
 
     if (!ret[0]) return false
