@@ -179,8 +179,8 @@ export default class MovementsController {
 
   public async update (last_movement: number | null) {
     if (last_movement){
-      const movement = await MovementModel.findOrFail(last_movement)
-
+      const movement = await MovementModel.query().where('id', last_movement).first();
+      if (!movement) return false;
       movement.active = false;
       const ret = await movement.save()
 

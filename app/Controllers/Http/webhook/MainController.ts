@@ -27,7 +27,7 @@ export default class MainController {
     const From = request.input('From').substring(12, 200)
     const Body = request.input('Body')
     const client_id = params.client_id;
-
+    let saveIdIfNumberExists: any = 0
     let objMessage: IMessage = {
       client_id: client_id,
       cd_message: '',
@@ -53,21 +53,30 @@ export default class MainController {
     //#region verificando se o number ja falou antes
       const ifNumberExists = await new MovementsController().showIfExists({ number: From, client_id })
       if (ifNumberExists) {
-        await new MovementsController().store({
-          number: From,
-          nr_attendance: ifNumberExists.nr_attendance,
-          status_movement_code: 'waiting',
-          menu_id: null,
-          submenu_id: null,
-          quantity: null,
-          main_movement: null,
-          type_attendance: null,
-          last_movement: null,
-          keep_main_movement: false,
-          client_id,
-          more_service: false,
-        })
+        // await new MovementsController().store({
+        //   number: From,
+        //   nr_attendance: ifNumberExists.nr_attendance,
+        //   status_movement_code: 'waiting',
+        //   menu_id: null,
+        //   submenu_id: null,
+        //   quantity: null,
+        //   main_movement: null,
+        //   type_attendance: null,
+        //   last_movement: null,
+        //   keep_main_movement: false,
+        //   client_id,
+        //   more_service: false,
+        // })
 
+        const saveIfNumberExists = new Movement()
+        saveIfNumberExists.number = From
+        saveIfNumberExists.nr_attendance = ifNumberExists.nr_attendance
+        saveIfNumberExists.client_id = client_id
+        saveIfNumberExists.status_movement_id = 1
+        await saveIfNumberExists.save()
+        if (saveIfNumberExists.$isPersisted){
+          saveIdIfNumberExists = saveIfNumberExists.id
+        }
       }
     //#endregion verificando se o number ja falou antes
 
@@ -119,7 +128,7 @@ export default class MainController {
           menu_id: null,
           submenu_id: null,
           quantity: null,
-          last_movement: checkNumber.id,
+          last_movement: ifNumberExists ? saveIdIfNumberExists : checkNumber.id,
           client_id: client_id
         })
 
