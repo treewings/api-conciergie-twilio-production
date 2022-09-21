@@ -155,13 +155,12 @@ export default class MovementsController {
     .where('client_id', data.client_id)
     .whereNot('status_movement_id', 1)
     .whereNotNull('nr_attendance')
-    .max('nr_attendance')
-    .first()
+    .orderBy('nr_attendance', 'desc')
 
-    if (!ret) return false
+    if (!ret[0]) return false
 
-    console.log(`ret.nr_attendance: ${ret.nr_attendance}`)
-    return ret;
+    console.log(`ret.nr_attendance: ${ret[0].nr_attendance}`)
+    return ret[0];
   }
 
   public async show (data: IMovementShow) {
