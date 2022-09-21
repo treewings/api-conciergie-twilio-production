@@ -144,7 +144,7 @@ export default class MovementsController {
     .where('client_id', data.client_id)
     .whereNotNull('nr_attendance')
 
-    if (!ret) return false
+    if (!ret[0]) return false
 
     if (ret.find(e => e.active == true)) return false
 
