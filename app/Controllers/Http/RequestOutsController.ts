@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Moment from 'moment'
+import Day from 'dayjs'
 
 //controllers
 import SummariesController from 'App/Controllers/Http/SummariesController'
@@ -136,8 +137,8 @@ export default class RequestOutsController {
             cad_nm_item: element.description,
             cad_qtd_item: element.quantity,
             cad_cd_tarefa: data.task,
-            cad_data_pedido: Moment().format('Y-M-D'),
-            cad_hora_pedido: Moment().format('H:mm'),
+            cad_data_pedido: Day().format('YYYY-MM-DD'),
+            cad_hora_pedido: Day().format('HH:mm'),
           }
         }
       }
