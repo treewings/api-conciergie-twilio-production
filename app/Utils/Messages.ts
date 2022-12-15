@@ -20,7 +20,7 @@ export default class Messages {
       const retMessage = await MessageModel.findBy('cd_message', data.cd_message);
 
       if (data.cd_message == `option_invalid`){
-        console.log(`number: ${JSON.stringify(data.number)}`)
+        // console.log(`number: ${JSON.stringify(data.number)}`)
         const lastLog = await new LogAccessController().index({number: data.number || `0`})
         if (lastLog){
           if (retMessage)

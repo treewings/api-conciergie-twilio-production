@@ -25,7 +25,7 @@ export default class AppProvider {
       const XmlContr = (await import('App/Controllers/Http/XmlsController')).default
 
       cron.schedule("*/10 * * * * *", async () => { //*/10 * * * * *
-        console.log(`Init xml...`)
+
         await new XmlContr().BuildXmlSingleRequest()
         await new XmlContr().BuildXmlSingleRequestItens()
       });
@@ -42,7 +42,6 @@ export default class AppProvider {
       // #region cron send survey
       const SurveyController = (await import('App/Controllers/Http/SurveyController')).default
       cron.schedule("*/1 * * * *", async () => {
-        console.log(`Init survey contact...`)
         await new SurveyController().index()
       });
       // #endregion cron send survey
@@ -52,7 +51,6 @@ export default class AppProvider {
       // #region cron survey expired
       const SurveyController = (await import('App/Controllers/Http/SurveyController')).default
       cron.schedule("*/30 * * * * *", async () => {
-        console.log(`Init survey EXP...`)
         await new SurveyController().expiration()
       });
       // #endregion cron send survey

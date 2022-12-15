@@ -92,7 +92,7 @@ export default class MenusUtil {
               let retSubMenu = await newSubMenuModel.save()
 
               if (newSubMenuModel.$isPersisted) {
-                console.log(`SubMenu_id: ${retSubMenu.id}`)
+                // console.log(`SubMenu_id: ${retSubMenu.id}`)
               }
 
             }

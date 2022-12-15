@@ -87,11 +87,11 @@ export default class Api {
       ACCESS_KEY: data.token
     }
 
-    console.log(JSON.stringify({
-      url: url,
-      data: body,
-      headers: headers
-    }))
+    // console.log(JSON.stringify({
+    //   url: url,
+    //   data: body,
+    //   headers: headers
+    // }))
 
     const ret = Axios({
         method: 'post',

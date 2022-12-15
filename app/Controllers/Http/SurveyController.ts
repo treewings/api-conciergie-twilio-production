@@ -86,7 +86,7 @@ export default class SurveyController {
         return false
       }
 
-      console.log(`Iniciando pesquisa, atendimento: ${clientData.nr_attendance}`)
+      // console.log(`Iniciando pesquisa, atendimento: ${clientData.nr_attendance}`)
 
       // add movement for survey
       await new MovementsController().store({
