@@ -24,30 +24,44 @@ export default class SurveyController {
   public async index () {
     try {
       const surveyData = await SurveyModel.query()
-      .whereNull('contact_at')
-      .preload('request_outs')
-      .orderBy('updated_at') // orderBy, for balance in contacts
-      .first();
-      if (!surveyData) return false
+        .whereNull('contact_at')
+        .preload('request_outs')
+        .orderBy('updated_at')
+        .first()
+      if (!surveyData) {
+        Log.info(`no survey found`)
+        return false
+      }
+
       Log.info(`init survey data: ${surveyData.id} found`)
-      // get client data
-      const clientData = await MovementsModel.query()
-      .where('main_movement', surveyData.request_outs.movement_id)
-      .where('status_movement_id', 9)
-      .preload('client').first();
-      if (!clientData) return false
+
+      const clientData =
+        await MovementsModel.query()
+        .where('main_movement', surveyData.request_outs.movement_id)
+        .where('status_movement_id', 9)
+        .preload('client')
+        .first()
+      if (!clientData) {
+        Log.error(`no client found, surveyId: ${surveyData.id}`)
+        surveyData.updatedAt = DateTime.local()
+        await surveyData.save()
+        return false
+      }
+
       Log.info(`init survey client data: ${clientData.client_id} found`)
-      // if the task has been completed
+
       const retUmov = await new UmovMeUtil().searchTaskWithStatusEnd({
         url_base: clientData.client.endpoint_request,
         taskId: surveyData.request_outs.return_content
       })
 
-      if (!retUmov) { // caso nao esteja finalizado, atualiza o updated_at, para colocar para o fim da fila
+      if (!retUmov) {
+        Log.error(`tasks not finished, surveyId: ${surveyData.id}`)
         surveyData.updatedAt = DateTime.local()
         await surveyData.save()
         return false
       }
+
       const movementData =
         await MovementsModel.query()
         .where('number', surveyData.request_outs.number)
@@ -56,9 +70,21 @@ export default class SurveyController {
         .orderBy('id', 'desc')
 
       // if in attendance for bot
-      if (!movementData) return false
+      if (!movementData) {
+        Log.error(`error in find movements, surveyId: ${surveyData.id}`)
+        surveyData.updatedAt = DateTime.local()
+        await surveyData.save()
+        return false
+      }
+
+
       const dataStoreMovemwent = movementData.find(e => e.active == true)
-      if (dataStoreMovemwent) return false
+      if (dataStoreMovemwent) {
+        Log.error(`error, has find active movement, surveyId: ${surveyData.id}`)
+        surveyData.updatedAt = DateTime.local()
+        await surveyData.save()
+        return false
+      }
 
       console.log(`Iniciando pesquisa, atendimento: ${clientData.nr_attendance}`)
 
@@ -86,16 +112,25 @@ export default class SurveyController {
       .where('client_id', clientData.client_id)
       .first();
 
-      if (!returnMovementCreated) return false
+      if (!returnMovementCreated) {
+        Log.error(`error in create movement, surveyId: ${surveyData.id}`)
+        surveyData.updatedAt = DateTime.local()
+        await surveyData.save()
+        return false
+      }
+
       surveyData.contact_at = Day().format()
       surveyData.movement_id = returnMovementCreated.id
       await surveyData.save()
 
-
       // Get submenu infos
       const submenuData = await SubMenuModel.find(surveyData.submenu_id)
-
-      if (!submenuData) return false
+      if (!submenuData) {
+        Log.error(`error in submenu, surveyId: ${surveyData.id}`)
+        surveyData.updatedAt = DateTime.local()
+        await surveyData.save()
+        return false
+      }
 
       // twilio message
       const returnTwilio =
@@ -112,6 +147,7 @@ export default class SurveyController {
 
     } catch (error) {
       Log.error(JSON.stringify(error))
+      return false
     }
 
 

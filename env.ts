@@ -23,4 +23,7 @@ export default Env.rules({
 	SESSION_DRIVER: Env.schema.string(),
   DRIVE_DISK: Env.schema.enum(['local'] as const),
 	NODE_ENV: Env.schema.enum(['development', 'production', 'testing'] as const),
+  ENABLE_CRON_XML: Env.schema.boolean(),
+  ENABLE_CRON_SURVEY: Env.schema.boolean(),
+  ENABLE_CRON_EXP_SURVEY: Env.schema.boolean(),
 })
