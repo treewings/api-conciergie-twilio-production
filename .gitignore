@@ -7,4 +7,5 @@ coverage
 tmp
 .log
 general.log
+*.log
 important_files
