@@ -187,7 +187,11 @@ export default class Messages {
             menu = ''
           }
 
-          subMenu += `${menu}\n - ${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n Prazo: ${element.sub_menu.time_attendance} min\n`
+          var prazo = ''
+          if(element.sub_menu.time_attendance){
+           var prazo = `Prazo: ${element.sub_menu.time_attendance} min`
+          }
+          subMenu += `${menu}\n - ${element.sub_menu.description}\n Quantidade: ${element.quantity || 1}\n ${prazo}\n`
 
           descMenu = element.menu.description
 

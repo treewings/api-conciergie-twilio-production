@@ -42,7 +42,7 @@ export default class Api {
             telefone
           } = response.data.message.Body.paciente
 
-          if (!cd_convenio || !nm_convenio || !cd_paciente || !nm_paciente || !dt_nascimento || !telefone || !cd_setor || !cd_unid_int || !cd_leito){
+          if (!cd_convenio || !nm_convenio || !cd_paciente || !nm_paciente || !dt_nascimento || !cd_setor || !cd_leito){
             return null
           }
 
@@ -60,7 +60,7 @@ export default class Api {
             CD_UNID_INT: cd_unid_int,
             PREUCAUCAO: null
           }
-
+			console.log(dataTranslate)
           return dataTranslate
         }
 
@@ -119,7 +119,7 @@ export default class Api {
             telefone
           } = response.data.message.Body.paciente
 
-          if (!cd_convenio || !nm_convenio || !cd_paciente || !nm_paciente || !dt_nascimento || !telefone || !cd_setor || !cd_unid_int || !cd_leito){
+          if (!cd_convenio || !nm_convenio || !cd_paciente || !nm_paciente || !dt_nascimento || !cd_setor || !cd_leito){
             return null
           }
 
@@ -138,7 +138,7 @@ export default class Api {
             CD_LEITO: cd_leito,
             PREUCAUCAO: null
           }
-
+			console.log(dataTranslate)
           return dataTranslate
         }
 

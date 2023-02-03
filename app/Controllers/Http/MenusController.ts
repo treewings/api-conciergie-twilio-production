@@ -76,15 +76,15 @@ export default class MenusController {
   }
 
   public async repeatMenusSector () {
-	  // ja cadastrado o setor 200, 2
+	  // ja cadastrado o setor 23 sepaco
      const setores = [
-       3,4,10,12,18,32,37,40,84,105,106,107,147,151,175,183,184,199,208,211,235,236,237,311
+       1,8,18,24,25,26,31,33,37,38,39,40,47,48,49,52,99,100,105,113,114,115,118,121,124,125, 129, 130, 163, 167, 169, 170, 171, 172, 174, 178, 179, 181, 182, 199,216, 226, 233, 234, 237, 238, 239, 240, 242, 268, 270, 271, 277, 278, 279, 280, 281, 282, 283, 330, 342,343, 364, 365, 367
      ]
 
     for (let index = 0; index < setores.length; index++) {
       const data: any = {
-        client_id: 2,
-        sector_id: 200,
+        client_id: 6,
+        sector_id: 23,
         new_sector: setores[index]
       }
 
