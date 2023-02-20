@@ -67,7 +67,7 @@ export default class Api {
         return null
       })
       .catch(function (err) { //error
-        console.error('Axios: erro ao acessar o endpoint MV')
+        console.error('Axios: erro ao acessar o endpoint MV (fncmv)')
         console.error(err)
         return null
       });
@@ -145,7 +145,7 @@ export default class Api {
         return null
       })
       .catch(function (err) { //error
-        console.error('Axios: erro ao acessar o endpoint MV')
+        console.error('Axios: erro ao acessar o endpoint MV (fncdataMv)')
         console.error(err)
         return null
       });
