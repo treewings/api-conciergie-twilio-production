@@ -25,8 +25,9 @@ export default class Api {
     ).then(function (response: any) {
 
         let status = response.data.message.status
+	let data_alta = response.data.message.Body.atendimento.dt_alta
         Log.info(`Api service, mv method: ${JSON.stringify(response.data.message.Body)}`)
-        if (status == 200){
+        if (status == 200 && data_alta == null){
           const {
             convenio: { cd_convenio, nm_convenio },
             setor: { cd_setor },
@@ -102,8 +103,9 @@ export default class Api {
     ).then(function (response: any) {
       Log.info(`Api service, dataMv method: ${JSON.stringify(response.data.message.Body)}`)
         let status = response.data.message.status
+	let data_alta = response.data.message.Body.atendimento.dt_alta
 
-        if (status == 200){
+        if (status == 200 && data_alta == null){
           const {
             convenio: { cd_convenio, nm_convenio },
             setor: { cd_setor },

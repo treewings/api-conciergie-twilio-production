@@ -43,8 +43,9 @@ export default class MainController {
     }
     //#region informacoes do cliente
     const clientData = await new ClientsController().show(client_id)
-
+	
     if (!clientData) {
+	console.log('primeira verificacao')
       objMessage.cd_message = 'error'
       return new TwilioResponse().send(objMessage)
     }
